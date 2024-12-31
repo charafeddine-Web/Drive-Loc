@@ -1,15 +1,21 @@
 create database drive_loc;
 use drive_loc;
 
-
-CREATE TABLE User (
-    id_user INT AUTO_INCREMENT PRIMARY KEY,       -- Unique identifier for the user
-    fullname VARCHAR(100) NOT NULL,               -- User's full name
-    phone VARCHAR(15),                            -- User's phone number
-    email VARCHAR(100) UNIQUE NOT NULL,           -- User's email
-    password VARCHAR(255) NOT NULL,               -- Encrypted password
-    role ENUM('client', 'admin') NOT NULL         -- Role: either 'client' or 'admin'
+CREATE TABLE Role (
+    id_role INT AUTO_INCREMENT PRIMARY KEY,       
+    name VARCHAR(50) NOT NULL UNIQUE              
 );
+
+CREATE TABLE Users (
+    id_user INT AUTO_INCREMENT PRIMARY KEY,       
+    fullname VARCHAR(100) NOT NULL,              
+    phone VARCHAR(15),                            
+    email VARCHAR(100) UNIQUE NOT NULL,           
+    password VARCHAR(255) NOT NULL,               
+    id_role INT NOT NULL,                         
+    FOREIGN KEY (id_role) REFERENCES Role(id_role) 
+);
+
 
 
 CREATE TABLE Category (
@@ -41,7 +47,7 @@ CREATE TABLE Reservation (
     pickup_location VARCHAR(255) NOT NULL,
     dropoff_location VARCHAR(255) NOT NULL,
     FOREIGN KEY (vehicle_id) REFERENCES Vehicle(id_vehicle),
-    FOREIGN KEY (user_id) REFERENCES User(id_user)
+    FOREIGN KEY (user_id) REFERENCES Users(id_user)
 );
 
 CREATE TABLE Review (
@@ -51,17 +57,17 @@ CREATE TABLE Review (
     comment TEXT,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (vehicle_id) REFERENCES Vehicle(id_vehicle),
-    FOREIGN KEY (user_id) REFERENCES User(id_user)
+    FOREIGN KEY (user_id) REFERENCES Users(id_user)
 );
 
 -- Ex INSERTION DES DONNER
 
-INSERT INTO User (fullname, phone, email, password, role) VALUES
-('Ahmed El Khattabi', '0661234567', 'ahmed.elkhattabi@example.com', 'password123', 'client'),
-('Fatima Zahra Bouziane', '0677654321', 'fatima.bouziane@example.com', 'securepass', 'client'),
-('Youssef Benjelloun', '0652349876', 'youssef.benjelloun@example.com', 'adminpass', 'admin'),
-('Sara El Idrissi', '0684321567', 'sara.elidrissi@example.com', 'clientpass', 'client'),
-('Mohamed Alaoui', '0621238765', 'mohamed.alaoui@example.com', 'admin123', 'admin');
+INSERT INTO User (fullname, phone, email, password, role_id) VALUES
+('Ahmed El Khattabi', '0661234567', 'ahmed.elkhattabi@example.com', 'password123', 2),
+('Fatima Zahra Bouziane', '0677654321', 'fatima.bouziane@example.com', 'securepass', 2),
+('Youssef Benjelloun', '0652349876', 'youssef.benjelloun@example.com', 'adminpass', 1),
+('Sara El Idrissi', '0684321567', 'sara.elidrissi@example.com', 'clientpass', 2),
+('Mohamed Alaoui', '0621238765', 'mohamed.alaoui@example.com', 'admin123', 1);
 
 INSERT INTO Category (name, description) VALUES
 ('Economy', 'Affordable and fuel-efficient vehicles for budget-conscious clients.'),

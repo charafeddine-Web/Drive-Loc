@@ -1,6 +1,5 @@
 <?php
-use DatabaseConnection;
-
+use Classes\DatabaseConnection;
 
 
 ?>
@@ -92,8 +91,9 @@ use DatabaseConnection;
                 <div class="flex items-center space-x-3">
                     <i class="fa-solid fa-car-side text-4xl bg-gradient-to-r from-black to-blue-900 text-transparent bg-clip-text"></i>
                     <div>
-                        <span class="text-3xl font-bold logo-text tracking-wider">Loca</span>
-                        <span class="text-3xl font-black logo-text">Auto</span>
+                        <span class="text-3xl font-bold logo-text tracking-wider">            Drive  
+                        </span>
+                        <span class="text-3xl font-black logo-text">Loc</span>
                     </div>
                 </div>
                 
@@ -111,10 +111,12 @@ use DatabaseConnection;
                     </div>
                     
                     <div class="flex items-center space-x-6">
-                        <a href="./controllers/logout.php"><button class="bg-black hover:bg-gray-800 text-white px-6 py-2.5 rounded-full transition-colors duration-300 flex items-center space-x-2">
+                        <form action="../Visiteur/logout.php" method="post">
+                        <button type="submit"  class="bg-black hover:bg-gray-800 text-white px-6 py-2.5 rounded-full transition-colors duration-300 flex items-center space-x-2">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <span>Logout</span>
-                        </button></a>
+                        </button>
+                        </form>
                     </div>
                 </div>
             </div>

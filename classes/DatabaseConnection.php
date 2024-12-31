@@ -1,5 +1,6 @@
 <?php
-namespace atabaseConnection;
+namespace Classes;
+
 class DatabaseConnection {
     private static $instance = null;
     private $connection;
@@ -10,10 +11,10 @@ class DatabaseConnection {
             $username = "root";
             $password = "";
     
-            $this->connection = new PDO($dsn, $username, $password);
+            $this->connection = new \PDO($dsn, $username, $password);
 
-            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
+            $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        } catch (\PDOException $e) {
             die("Database connection failed: " . $e->getMessage());
         }
     }

@@ -1,3 +1,37 @@
+<?php
+// require_once("./classes/User.php");
+// require_once __DIR__ .'/db.php';
+require_once '../autoload.php';
+session_start();
+use Classes\User;
+
+$error_message = [];
+$success_message = ""; 
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
+  if (isset($_POST['email'], $_POST['password'])) {
+      $email = trim($_POST['email']);
+      $password = $_POST['password'];
+      // $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+      $user = User::login($email, $password);
+      var_dump($user);
+
+      if ($user) {
+          $success_message = "Connexion réussie !";
+      } else {
+          $error_message[] = "Email ou mot de passe incorrect.";
+      }
+  } else {
+      $error_message[] = "Veuillez remplir tous les champs.";
+  }
+}
+
+var_dump($_SESSION);
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,6 +41,7 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
   <title>Document</title>
   <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
   <style>
     .gradient {
       background: linear-gradient(90deg, #d53369 0%, #daae51 100%);
@@ -74,9 +109,22 @@
       <p style="animation: appear 3s ease-out;" class="text-center text-gray-200">
         Sign in to your account
       </p>
-      <form method="POST" action="#" class="space-y-6">
+      <?php if (!empty($error_message)): ?>
+                <div class="bg-red-500 text-white p-4 rounded">
+                    <?php foreach ($error_message as $error): ?>
+                        <p><?php echo htmlspecialchars($error); ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($success_message)): ?>
+                <div class="bg-green-500 text-white p-4 rounded">
+                    <p><?php echo htmlspecialchars($success_message); ?></p>
+                </div>
+            <?php endif; ?>
+      <form method="POST" action="" class="space-y-6">
         <div class="relative">
-          <input placeholder="john@example.com"
+          <input placeholder="example@example.com"
             class="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
             required="" id="email" name="email" type="email" />
           <label
@@ -215,7 +263,11 @@
       }
       return false;
     }
+
+
+    
   </script>
+  
 </body>
 
 </html>
