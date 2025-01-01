@@ -1,19 +1,8 @@
-<?php
-require_once '../autoload.php'; 
 
-use Classes\Admin;
 
-try {
-    $admin = new Admin(1, "charaf", "charafeddinetbibzat@gmail.com", "0651928482", 1);
-    $result = $admin->ViewStatistic();
-    
-} catch (\Exception $e) {
-    echo "Error: " . $e->getMessage();
-}
-
-?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <!-- <meta http-equiv="refresh" content="5"> -->
@@ -35,9 +24,9 @@ try {
             </span>Loc</div>
         </a>
         <ul class="side-menu w-full mt-12">
-            <li class="active h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"><i
+            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"><i
                         class="fa-solid fa-user-group"></i> Statistic</a></li>
-            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php"><i
+            <li class="active h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php"><i
                         class="fa-solid fa-car"></i> Clients</a></li>
             <li class=" h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listVehicle.php"><i
                         class="fa-solid fa-file-contract"></i></i>Vehicles</a></li>
@@ -77,7 +66,7 @@ try {
                     class="count absolute top-[-6px] right-[-6px] w-[20px] h-[20px] bg-[#D32F2F] text-[#f6f6f6] border-2 border-[#f6f6f9] font-semibold text-[12px] flex items-center justify-center rounded-full ">12</span>
             </a>
             <a href="#" class="profile">
-                <img class="w-[36px] h-[36px] object-cover rounded-full" width="36" height="36" src=".././assets/image/charaf.png.jfif">
+            <img class="w-[36px] h-[36px] object-cover rounded-full" width="36" height="36" src=".././assets/image/charaf.png.jfif">
             </a>
         </nav>
 
@@ -85,21 +74,22 @@ try {
         <main class=" mainn w-full p-[36px_24px] max-h-[calc(100vh_-_56px)]">
             <div class="header flex items-center justify-between gap-[16px] flex-wrap">
                 <div class="left">
-                    <ul class="breadcrumb flex items-center space-x-[16px]">
-                        <li class="text-[#363949]"><a class="active" href="listClients.php">
+                <ul class="breadcrumb flex items-center space-x-[16px]">
+                        <li class="text-[#363949]"><a  href="listClients.php">
                                 index &npr;
                             </a></li>
                         /
-                        <li class="text-[#363949]"><a href="listCars.php" >Clients &npr;</a></li> /
+                        <li class="text-[#363949]"><a href="listCars.php" class="active" >Clients &npr;</a></li> /
                         <li class="text-[#363949]"><a href="listContrat.php">Vehicles &npr;</a></li> /
                         <li class="text-[#363949]"><a href="statistic.php">Categorys &npr;</a></li>
 
                     </ul>
 
                 </div>
-                <a  href="#"
-                    class="report h-[40px] px-[20px] rounded-[10px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-bold p-6">
-                    <span>Rapport &npr;</span>
+                <a id="buttonadd" href="#"
+                    class="report h-[36px] px-[16px] rounded-[36px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-medium">
+                    <i class="fa-solid fa-car"></i>
+                    <span>Add Car</span>
                 </a>
             </div>
             <!-- insights-->
@@ -109,11 +99,7 @@ try {
                     <span class="info">
                         <h3>
                             <?php
-                                    if ($result && isset($result['total_users'])) {
-                                        echo $result['total_users'];
-                                    } else {
-                                        echo "No data available.";
-                                    }
+                            // echo $result['total_clients'];
                             ?>
                         </h3>
                         <p>Clients</p>
@@ -123,29 +109,20 @@ try {
                     <span class="info">
                         <h3>
                             <?php
-                            if ($result && isset($result['total_vehicles'])) {
-                                echo $result['total_vehicles'];
-                            } else {
-                                echo "No data available.";
-                            }
-                            
+                            // echo $resultv['total_voitures'];
                             ?>
                         </h3>
-                        <p>Vehicles</p>
+                        <p>Cars</p>
                     </span>
                 </li>
                 <li><i class="fa-solid fa-file-signature"></i>
                     <span class="info">
                         <h3>
                             <?php
-                             if ($result && isset($result['total_reservations'])) {
-                                echo $result['total_reservations'];
-                            } else {
-                                echo "No data available.";
-                            }
+                            // echo $resultc['total_contrats'];
                             ?>
                         </h3>
-                        <p>Reservations</p>
+                        <p>Contrats</p>
                     </span>
                 </li>
             </ul>
@@ -154,7 +131,7 @@ try {
                 <div class="orders  flex-grow flex-[1_0_500px]">
                     <div class="header  flex items-center gap-[16px] mb-[24px]">
                         <i class='bx bx-list-check'></i>
-                        <h3 class="mr-auto text-[24px] font-semibold">Statistic</h3>
+                        <h3 class="mr-auto text-[24px] font-semibold">List Cars</h3>
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-search'></i>
                     </div>

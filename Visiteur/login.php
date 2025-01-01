@@ -1,7 +1,5 @@
 <?php
-// require_once("./classes/User.php");
-// require_once __DIR__ .'/db.php';
-require_once '../autoload.php';
+require_once '../autoload.php'; 
 session_start();
 use Classes\User;
 
@@ -9,27 +7,34 @@ $error_message = [];
 $success_message = ""; 
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
-  if (isset($_POST['email'], $_POST['password'])) {
-      $email = trim($_POST['email']);
-      $password = $_POST['password'];
-      // $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    if (!empty($_POST['email']) && !empty($_POST['password'])) {
+        $email = trim($_POST['email']);
+        $password = $_POST['password'];
 
-      $user = User::login($email, $password);
-      var_dump($user);
+        $user = User::login($email, $password);
+        var_dump($user);
+        if ($user === true) { 
+            $success_message = "Connexion réussie !";
 
-      if ($user) {
-          $success_message = "Connexion réussie !";
-      } else {
-          $error_message[] = "Email ou mot de passe incorrect.";
-      }
-  } else {
-      $error_message[] = "Veuillez remplir tous les champs.";
-  }
+            if (isset($_SESSION['id_user']) && $_SESSION['id_role'] == 1) {
+                header("Location: ../admin/index.php");
+            } else {
+                header("Location: ../client/index.php");
+            }
+            exit();
+        } else {
+        
+            $error_message[] = "Email ou mot de passe incorrect.";
+        }
+    } else {
+        $error_message[] = "Veuillez remplir tous les champs.";
+    }
 }
 
-var_dump($_SESSION);
-
+// Debug : Vérifiez les données de session
+// var_dump($_SESSION);
 ?>
+
 
 
 <!DOCTYPE html>

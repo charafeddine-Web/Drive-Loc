@@ -29,11 +29,12 @@ CREATE TABLE Vehicle (
     id_vehicle INT AUTO_INCREMENT PRIMARY KEY,
     model VARCHAR(100) NOT NULL,
     price_per_day FLOAT NOT NULL,
-    availability BOOLEAN DEFAULT TRUE,
-    transmissionType varchar(50),
+    availability enum('Available','Unavailable'),
+    transmissionType enum('Automatic','Manual'),
     fuelType varchar(50),
     mileage float,
     category_id INT,
+    imageVeh varchar(200),
     FOREIGN KEY (category_id) REFERENCES Category(id_category)
 );
 

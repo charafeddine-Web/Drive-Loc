@@ -28,7 +28,7 @@ public function getfull_name() {
             // if (!$this->full_name || !$this->email || !$this->password) {
             //     throw new \Exception("Missing required fields: name, email, or password.");
             // }
-            $hashedPassword = password_hash($this->password, PASSWORD_BCRYPT);
+            $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
             $id_role=2;
             $stmt->bindParam(':full_name',$this->full_name);
             $stmt->bindParam(':phone',$this->phone);

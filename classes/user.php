@@ -8,11 +8,11 @@ abstract class User{
     protected $email;
     protected $phone;
     protected $password;
-    protected $id_role=2;
+    protected $id_role;
     protected $id_user;
 
 
-    public function __construct($id_user = null,$full_name,$email, $phone,$id_role){
+    public function __construct($id_user,$full_name,$email, $phone,$id_role){
         $this->full_name=$full_name;
         $this->email=$email;
         $this->phone=$phone;
@@ -54,44 +54,39 @@ public function getphone() {
 }
 public static function login($email, $password) {
     $pdo = DatabaseConnection::getInstance()->getConnection();
-    
     if (!$pdo) {
-        echo "Erreur de connexion à la base de données.";
-        return null;
+        return "Erreur de connexion à la base de données.";
     }
 
-    $query = "SELECT id_user, id_role, fullname password FROM users WHERE email = :email";
-    
+    $query = "SELECT id_user, id_role, fullname, password FROM users WHERE email = :email";
     $stmt = $pdo->prepare($query);
-    $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+    $stmt->bindParam(':email', $email);
     $stmt->execute();
 
     if ($stmt->rowCount() === 1) {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        error_log("Entered password: " . $password);  // Log entered password
+        error_log("Stored password hash: " . $user['password']);  // Log stored password hash
+
         if (password_verify($password, $user['password'])) {
             session_start();
-
             $_SESSION['id_user'] = $user['id_user'];
-            $_SESSION['id_role'] = $user['id_role'];  
-            $_SESSION['fullname'] = $user['fullname']; 
-
-            if ($_SESSION['id_role'] != 2) { 
-                header("Location: ../admin/index.php");
-                exit();
-            } else { 
-                header("Location: ../client/index.php");
-                exit();
-            }
+            $_SESSION['id_role'] = (int)$user['id_role'];
+            $_SESSION['fullname'] = $user['fullname'];
+            return true; 
         } else {
-            echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-            echo "<script>Swal.fire('Erreur!', 'Mot de passe incorrect.', 'error');</script>";
+            error_log("Password verification failed for email: " . $email);
+            return "Mot de passe incorrect.";
         }
     } else {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>Swal.fire('Erreur!', 'Utilisateur introuvable avec cet email.', 'error');</script>";
+        error_log("User not found for email: " . $email);
+        return "Utilisateur introuvable avec cet email.";
     }
 }
+
+
+
 
     
     
