@@ -24,12 +24,11 @@
             </span>Loc</div>
         </a>
         <ul class="side-menu w-full mt-12">
-            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"><i
-                        class="fa-solid fa-user-group"></i> Statistic</a></li>
-            <li class="active h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php"><i
-                        class="fa-solid fa-car"></i> Clients</a></li>
-            <li class=" h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listVehicle.php"><i
-                        class="fa-solid fa-file-contract"></i></i>Vehicles</a></li>
+            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"> <i class="fa-solid fa-file-contract"></i>Statistic</a></li>
+            <li class="active h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php">
+            <i class="fa-solid fa-user-group"></i>Clients</a></li>
+            <li class="  h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listVehicle.php"><i
+            class="fa-solid fa-car"></i></i>Vehicles</a></li>
             <li class=" h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listCategory.php"><i
                         class="fa-solid fa-chart-simple"></i>Category</a></li>
         </ul>
@@ -102,7 +101,7 @@
                             // echo $result['total_clients'];
                             ?>
                         </h3>
-                        <p>Clients</p>
+                        <p>Clients Reserver</p>
                     </span>
                 </li>
                 <li><i class="fa-solid fa-car-side"></i>
@@ -112,10 +111,10 @@
                             // echo $resultv['total_voitures'];
                             ?>
                         </h3>
-                        <p>Cars</p>
+                        <p>Clients Non Reserver</p>
                     </span>
                 </li>
-                <li><i class="fa-solid fa-file-signature"></i>
+                <!-- <li><i class="fa-solid fa-file-signature"></i>
                     <span class="info">
                         <h3>
                             <?php
@@ -124,7 +123,7 @@
                         </h3>
                         <p>Contrats</p>
                     </span>
-                </li>
+                </li> -->
             </ul>
             <!---- data content ---->
             <div class="bottom-data flex flex-wrap gap-[24px] mt-[24px] w-full ">

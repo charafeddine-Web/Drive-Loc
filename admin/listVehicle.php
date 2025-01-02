@@ -1,5 +1,6 @@
 <?php
 require_once '../autoload.php';
+use Classes\Category;
 use Classes\Vehicle;
 try {
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
@@ -8,39 +9,25 @@ try {
         $disponibilite = trim(htmlspecialchars($_POST['disponibilite']));
         $transmissionType = trim(htmlspecialchars($_POST['transmissionType']));
         $fuelType = trim(htmlspecialchars($_POST['fuelType']));
+        $category = trim(htmlspecialchars($_POST['category']));
         $mileage = trim(htmlspecialchars($_POST['mileage']));
-        
-        // Handling the image upload
-        if (isset($_FILES['imageVeh']) && $_FILES['imageVeh']['error'] == 0) {
-            // Validate the image upload
-            $imageTmp = $_FILES['imageVeh']['tmp_name'];
-            $imageName = basename($_FILES['imageVeh']['name']);
-            $uploadDir = 'uploads/';  // Define the upload directory
-            $imagePath = $uploadDir . uniqid() . '_' . $imageName;  // Create a unique image path
-            
-            // Move the uploaded file to the directory
-            if (move_uploaded_file($imageTmp, $imagePath)) {
-                $imageVeh = $imagePath;  // Store the image path
-            } else {
-                throw new Exception('Failed to upload the image.');
-            }
-        } else {
-            throw new Exception('No image uploaded or error during upload.');
-        }
+        $imageVeh=$_FILES['imageVeh'];
+       
 
-        // Validate the other fields
         if (empty($model) || empty($price_day) || empty($disponibilite) || empty($transmissionType) || empty($fuelType) || empty($mileage)) {
             throw new Exception("All fields are required!");
         }
-
-        // Create and add the vehicle
-        $vehicle = new Vehicle(null, $model, $price_day, $disponibilite, $transmissionType, $fuelType, $mileage, $imageVeh);
+        $vehicle = new Vehicle(null, $model, $price_day, $disponibilite, $transmissionType, $fuelType, $mileage, $imageVeh,$category);
         $vehicle->addVeh();
     }
 } catch (\Exception $e) {
     echo "Error Adding Vehicle: " . $e->getMessage();
 }
 
+
+//statistic
+
+$result= Vehicle::showStatistic();
 
 
 ?>
@@ -49,7 +36,6 @@ try {
 
 <head>
     <meta charset="UTF-8">
-    <!-- <meta http-equiv="refresh" content="5"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -67,12 +53,11 @@ try {
                 </span>Loc</div>
         </a>
         <ul class="side-menu w-full mt-12">
-            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"><i
-                        class="fa-solid fa-user-group"></i> Statistic</a></li>
-            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php"><i
-                        class="fa-solid fa-car"></i> Clients</a></li>
+            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"> <i class="fa-solid fa-file-contract"></i>Statistic</a></li>
+            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php">
+            <i class="fa-solid fa-user-group"></i>Clients</a></li>
             <li class=" active h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listVehicle.php"><i
-                        class="fa-solid fa-file-contract"></i></i>Vehicles</a></li>
+            class="fa-solid fa-car"></i></i>Vehicles</a></li>
             <li class=" h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listCategory.php"><i
                         class="fa-solid fa-chart-simple"></i>Category</a></li>
         </ul>
@@ -149,26 +134,35 @@ try {
                         <p>All Vehicles </p>
                     </span>
                 </li> -->
-                <li><i class="fa-solid fa-car-side"></i>
-                    <span class="info">
-                        <h3>
-                            <?php
-                            // echo $resultv['total_voitures'];
-                            ?>
-                        </h3>
-                        <p>Véhicules Disponible</p>
-                    </span>
-                </li>
                 <li><i class="fa-solid fa-file-signature"></i>
                     <span class="info">
                         <h3>
                             <?php
-                            // echo $resultc['total_contrats'];
+                             if ($result && isset($result['total_vec_Unavailable'])) {
+                                echo $result['total_vec_Unavailable'];
+                            } else {
+                                echo "No data available.";
+                            }
                             ?>
                         </h3>
-                        <p>Véhicules No Disponible</p>
+                        <p>Vehicles Unavailable</p>
                     </span>
                 </li>
+                <li><i class="fa-solid fa-car-side"></i>
+                    <span class="info">
+                        <h3>
+                            <?php
+                            if ($result && isset($result['total_veh_Available'])) {
+                                echo $result['total_veh_Available'];
+                            } else {
+                                echo "No data available.";
+                            }
+                            ?>
+                        </h3>
+                        <p>Vehicles Available</p>
+                    </span>
+                </li>
+               
             </ul>
             <!---- data content ---->
             <div class="bottom-data flex flex-wrap gap-[24px] mt-[24px] w-full ">
@@ -196,7 +190,38 @@ try {
                         </thead>
                         <tbody>
                             <?php
-
+                           
+                            try {
+                                $vehicle = Vehicle::ShowVeh();
+                    
+                                if ($vehicle) {
+                                    foreach ($vehicle as $vh) {
+                                        $availabilityColor = $vh['availability'] === 'Available' ? 'text-green-500' : 'text-red-500';
+                                        $availabilityText = ucfirst($vh['availability']); 
+                                        echo "<tr>";
+                                        echo '<td class="border p-2">' . htmlspecialchars($vh['id_vehicle']) . '</td>';
+                                        echo '<td class="border p-2"><img src="../assets/image/' . htmlspecialchars($vh['imageVeh']) . '" alt="Vehicle Image" class="w-20 h-20 rounded shadow-md" /></td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($vh['model']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($vh['price_per_day']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($vh['transmissionType']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($vh['fuelType']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($vh['mileage']) . '</td>';
+                                        echo '<td class="border p-2"><span class="' . $availabilityColor . ' text-center">' . $availabilityText . '</span></td>';
+                                        echo '<td class="border p-2 flex items-center justify-between">';
+                                        echo '<a href="edit_vehicle.php?id=' . $vh['id_vehicle'] . '" class="text-blue-500 hover:text-blue-700">Edit</a> | ';
+                                        echo '<a href="delete_vehicle.php?id=' . $vh['id_vehicle'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a> | ';
+                                        echo '<a href="view_vehicle.php?id=' . $vh['id_vehicle'] . '" class="text-green-500 hover:text-green-700">View</a>';
+                                        echo '</td>';
+                                        echo "</tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='8' class='text-center p-2'>No vehicles available.</td></tr>";
+                                }
+                            } catch (PDOException $e) {
+                                echo "<tr><td colspan='8' class='text-center p-2 text-red-500'>Error: " . $e->getMessage() . "</td></tr>";
+                            }
+                            
+                        
                             ?>
                         </tbody>
                     </table>
@@ -215,6 +240,29 @@ try {
                     class="close-btn bg-red-500 text-white font-extrabold px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">
                     X</button>
             </div>
+
+                <div class="form-group flex flex-col">
+                    <label for="category" class="text-sm text-gray-700 mb-1">Category</label>
+                    <select name="category" id="category" class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+                        <?php
+                        try {
+                            $category = new Category();
+                            $resultCat = $category->ShowCategory();
+                            
+                            if ($resultCat) {
+                                foreach ($resultCat as $cat) {
+                                    echo '<option value="' . htmlspecialchars($cat['id']) . '">' . htmlspecialchars($cat['name']) . '</option>';
+                                }
+                            } else {
+                                echo '<option value="">No categories found</option>';
+                            }
+                        } catch (\PDOException $e) {
+                            echo "Error showing Category: " . $e->getMessage();
+                        }
+                        ?>
+                    </select>
+                </div>
+
 
             <div class="form-group flex flex-col">
                 <label for="model" class="text-sm text-gray-700 mb-1">Model</label>

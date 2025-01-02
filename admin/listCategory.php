@@ -24,13 +24,12 @@
             </span>Loc</div>
         </a>
         <ul class="side-menu w-full mt-12">
-            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"><i
-                        class="fa-solid fa-user-group"></i> Statistic</a></li>
-            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php"><i
-                        class="fa-solid fa-car"></i> Clients</a></li>
-            <li class=" h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listVehicle.php"><i
-                        class="fa-solid fa-file-contract"></i></i>Vehicles</a></li>
-            <li class=" active h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listCategory.php"><i
+            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"> <i class="fa-solid fa-file-contract"></i>Statistic</a></li>
+            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php">
+            <i class="fa-solid fa-user-group"></i>Clients</a></li>
+            <li class="  h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listVehicle.php"><i
+            class="fa-solid fa-car"></i></i>Vehicles</a></li>
+            <li class="active h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listCategory.php"><i
                         class="fa-solid fa-chart-simple"></i>Category</a></li>
         </ul>
         <ul class="side-menu w-full mt-12">

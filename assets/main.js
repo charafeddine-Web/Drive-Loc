@@ -117,18 +117,14 @@ function calculateDuration() {
         document.querySelector(".Dureet").value = '';
     }
 }
-// Script لإخفاء الـ Alert بعد 10 ثواني
 document.addEventListener('DOMContentLoaded', function() {
-    // نحدد العنصر ديال الـ Alert
     const alert = document.getElementById('alert-success');
 
     if (alert) {
-        // نخليه يختفي بعد 10 ثواني
         setTimeout(function() {
-            alert.classList.add('hidden'); // نضيف كلاس hidden باش نخبّيه
-        }, 10000); // 10000ms = 10 ثواني
+            alert.classList.add('hidden'); 
+        }, 10000); 
 
-        // زر الإغلاق (إذا بغى المستخدم يسدّ يدوياً)
         const closeAlert = document.getElementById('close-alert');
         closeAlert.addEventListener('click', function() {
             alert.classList.add('hidden');

@@ -57,5 +57,19 @@ class  Category{
         }
     }
     
-
+    public static function ShowCategory() {
+        try {
+            $con = DatabaseConnection::getInstance()->getConnection();
+            $sql = "SELECT * FROM Category";
+            $stmt = $con->prepare($sql);
+            
+            $stmt->execute();
+            
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo "Error showing Category: " . $e->getMessage();
+            return false;
+        }
+    }
+    
 }
