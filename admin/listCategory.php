@@ -1,4 +1,25 @@
+<?php
+require_once '../autoload.php';
+use Classes\Category;
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
+    $categoryName = $_POST['categoryName'];
+    $categoryDescription = $_POST['categoryDescription'];
+
+    if (!empty($categoryName) && !empty($categoryDescription)) {
+        try {
+            $category = new Category(null,$categoryName, $categoryDescription);
+            $category->AddCategory();  
+            header('Location: listCategory.php');
+            exit();  
+        } catch (Exception $e) {
+            echo 'Error adding category: ' . $e->getMessage();
+        }
+    } else {
+        echo 'Please fill in both fields.';
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -92,7 +113,7 @@
                 </a>
             </div>
             <!-- insights-->
-            <ul class="insights grid grid-cols-[repeat(auto-fit,_minmax(240px,_1fr))] gap-[24px] mt-[36px]">
+            <!-- <ul class="insights grid grid-cols-[repeat(auto-fit,_minmax(240px,_1fr))] gap-[24px] mt-[36px]">
                 <li>
                     <i class="fa-solid fa-user-group"></i>
                     <span class="info">
@@ -124,7 +145,7 @@
                         <p>Contrats</p>
                     </span>
                 </li>
-            </ul>
+            </ul> -->
             <!---- data content ---->
             <div class="bottom-data flex flex-wrap gap-[24px] mt-[24px] w-full ">
                 <div class="orders  flex-grow flex-[1_0_500px]">
@@ -139,16 +160,40 @@
                         <thead>
                             <tr class="">
                                 <th class="pb-3 px-3 text-sm text-left border-b border-grey">Registration number</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Image</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Mark </th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Model </th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Year</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Reservation</th>
-
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Name</th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Description </th>
                                 <th class="pb-3 px-5 text-sm text-left border-b border-grey">Action</th>
                             </tr>
                         </thead>
-
+                        <tbody>
+                            <?php
+                           
+                            try {
+                                $category = Category::ShowCategory();
+                    
+                                if ($category) {
+                                    foreach ($category as $ct) {
+                                        echo "<tr>";
+                                        echo '<td class="border p-2">' . htmlspecialchars($ct['id_category']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($ct['name']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($ct['description']) . '</td>';
+                                        echo '<td class="border p-2 flex items-center justify-between">';
+                                        echo '<a  href="edit_vehicle.php?id_category=' . $ct['id_category'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
+                                        echo '<a  href="delete_category.php?id_category=' . $ct['id_category'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a> | ';
+                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showVehicleDetails(' . $ct['id_category'] . ')">View</a>';
+                                        echo '</td>';
+                                        echo "</tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='8' class='text-center p-2'>No Category available.</td></tr>";
+                                }
+                            } catch (PDOException $e) {
+                                echo "<tr><td colspan='8' class='text-center p-2 text-red-500'>Error: " . $e->getMessage() . "</td></tr>";
+                            }
+                            
+                        
+                            ?>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -156,41 +201,30 @@
     </div>
 
     <div id="addClientForm"
-        class="add-client-form fixed  right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
-        <form action=".././controllers/controlCar.php" method="post" class="flex flex-col gap-4">
-            <h2 class="text-2xl font-semibold  mb-5">Add Car</h2>
-            <div class="form-group flex flex-col">
-                <label for="nummatrucle" class="text-sm text-gray-700 mb-1">Registration number </label>
-                <input name="NumMatricle" type="text" id="nummatrucle" placeholder="Enter the vehicle Sirie"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-            </div>
-            <div class="form-group flex flex-col">
-                <label for="marque" class="text-sm text-gray-700 mb-1">Mark</label>
-                <input name="Mark" type="text" id="marque" placeholder="Enter the vehicle Mark"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-            </div>
-            <div class="form-group flex flex-col">
-                <label for="modele" class="text-sm text-gray-700 mb-1">Model</label>
-                <input name="Model" type="text" id="modl" placeholder="Enter the vehicle Model"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-            </div>
-            <div class="form-group flex flex-col">
-                <label for="year" class="text-sm text-gray-700 mb-1">Year</label>
-                <input type="number" id="vehicleYear" name="1" min="2008" max="2024" required
-                    placeholder="Enter the vehicle year"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-            </div>
-            <div class="form-group flex flex-col">
-                <label for="carImage" class="text-sm text-gray-700 mb-1">Car Image</label>
-                <input type="text" name="carImage" id="carImage" accept="image/*"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-            </div>
-            <button type="submit"
-                class="submit-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
-                name="Add">Add</button>
-            <button type="button" id="closeForm"
-                class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
-        </form>
+        class="add-client-form fixed rounded-xl right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
+        <form action="" method="post" class="flex flex-col gap-4">
+        <h2 class="text-2xl font-semibold mb-5">Add Category</h2>
+        
+        <!-- Category Name -->
+        <div class="form-group flex flex-col">
+            <label for="categoryName" class="text-sm text-gray-700 mb-1">Category Name</label>
+            <input name="categoryName" type="text" id="categoryName" placeholder="Enter category name"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+        </div>
+
+        <!-- Category Description -->
+        <div class="form-group flex flex-col">
+            <label for="categoryDescription" class="text-sm text-gray-700 mb-1">Category Description</label>
+            <textarea name="categoryDescription" id="categoryDescription" rows="4" placeholder="Enter category description"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm"></textarea>
+        </div>
+
+        <button type="submit"
+            class="submit-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
+            name="addCategory">Add Category</button>
+        <button type="button" id="closeForm"
+            class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
+    </form>
     </div>
 
     <div id="editform"

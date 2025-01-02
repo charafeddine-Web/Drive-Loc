@@ -59,6 +59,11 @@ document.getElementById('buttonadd').addEventListener('click', function(e) {
 });
 
 
+
+
+
+
+
 document.getElementById('closeForm').addEventListener('click', function() {
         document.getElementById('addClientForm').classList.remove('active');
     })

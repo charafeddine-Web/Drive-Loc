@@ -21,37 +21,7 @@ abstract class User{
     }
 
     
-   
-public function getIdRole() {
-        return $this->id_role;
-    }
-    public function getIduser() {
-        return $this->id_user;
-    }
-
-public function setfull_name($full_name) {
-    $this->full_name = $full_name;
-}
-
-public function getfull_name() {
-    return $this->full_name;
-}
-
-public function setEmail($email) {
-    $this->email = $email;
-}
-
-public function getEmail() {
-    return $this->email;
-}
-
-public function setphonr($phone) {
-    $this->phone = $phone;
-}
-
-public function getphone() {
-    return $this->phone;
-}
+  
 public static function login($email, $password) {
     $pdo = DatabaseConnection::getInstance()->getConnection();
     if (!$pdo) {
@@ -66,16 +36,17 @@ public static function login($email, $password) {
     if ($stmt->rowCount() === 1) {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        error_log("Entered password: " . $password);  // Log entered password
-        error_log("Stored password hash: " . $user['password']);  // Log stored password hash
+        // error_log("Entered password: " . $password);  
+        // error_log("Stored password hash: " . $user['password']); 
 
         if (password_verify($password, $user['password'])) {
             session_start();
             $_SESSION['id_user'] = $user['id_user'];
-            $_SESSION['id_role'] = (int)$user['id_role'];
+            $_SESSION['id_role'] = $user['id_role'];
             $_SESSION['fullname'] = $user['fullname'];
             return true; 
         } else {
+            
             error_log("Password verification failed for email: " . $email);
             return "Mot de passe incorrect.";
         }
@@ -85,12 +56,6 @@ public static function login($email, $password) {
     }
 }
 
-
-
-
-    
-    
-    
     public static function logout() {
         session_start();
         if (isset($_SESSION['user_id'])) {

@@ -30,6 +30,9 @@ try {
 $result= Vehicle::showStatistic();
 
 
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,6 +43,8 @@ $result= Vehicle::showStatistic();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.tailwindcss.com"></script>
+<!-- Include SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <link rel="stylesheet" href=".././assets/style.css">
     <script src=".././assets/tailwind.js"></script>
@@ -208,9 +213,9 @@ $result= Vehicle::showStatistic();
                                         echo '<td class="border p-2">' . htmlspecialchars($vh['mileage']) . '</td>';
                                         echo '<td class="border p-2"><span class="' . $availabilityColor . ' text-center">' . $availabilityText . '</span></td>';
                                         echo '<td class="border p-2 flex items-center justify-between">';
-                                        echo '<a href="edit_vehicle.php?id=' . $vh['id_vehicle'] . '" class="text-blue-500 hover:text-blue-700">Edit</a> | ';
-                                        echo '<a href="delete_vehicle.php?id=' . $vh['id_vehicle'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a> | ';
-                                        echo '<a href="view_vehicle.php?id=' . $vh['id_vehicle'] . '" class="text-green-500 hover:text-green-700">View</a>';
+                                        echo '<a  href="edit_vehicle.php?id=' . $vh['id_vehicle'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
+                                        echo '<a  href="delete_vehicle.php?id_vehicle=' . $vh['id_vehicle'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a> | ';
+                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showVehicleDetails(' . $vh['id_vehicle'] . ')">View</a>';
                                         echo '</td>';
                                         echo "</tr>";
                                     }
@@ -246,12 +251,12 @@ $result= Vehicle::showStatistic();
                     <select name="category" id="category" class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
                         <?php
                         try {
-                            $category = new Category();
+                            $category = new Category(null,null,null);
                             $resultCat = $category->ShowCategory();
                             
                             if ($resultCat) {
                                 foreach ($resultCat as $cat) {
-                                    echo '<option value="' . htmlspecialchars($cat['id']) . '">' . htmlspecialchars($cat['name']) . '</option>';
+                                    echo '<option value="' . htmlspecialchars($cat['id_category']) . '">' . htmlspecialchars($cat['name']) . '</option>';
                                 }
                             } else {
                                 echo '<option value="">No categories found</option>';
@@ -321,55 +326,137 @@ $result= Vehicle::showStatistic();
                 name="submit">Add Vehicle</button>
         </form>
     </div>
+<!-- Edit Car Form -->
+<!-- Edit Car Form -->
+ <?php
+ if (isset($_GET['id_vehicle'])) {
+    $id_vehicle = $_GET['id_vehicle'];
+
+    try {
+        $car = Vehicle::ShowDetails($id_vehicle);
+        
+    } catch (\PDOException $e) {
+        echo '<p class="text-red-500">Error fetching vehicle details: ' . $e->getMessage() . '</p>';
+    }
+}
 
 
-
-    <div id="editform"
-        class="add-client-form fixed  right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
-        <form action=".././controllers/controlCar.php?Numedit=<?php echo $val[0]['NumImmatriculation'] ?>" method="post"
-            class="flex flex-col gap-4">
-            <h2 class="text-2xl font-semibold  mb-5">Update Car</h2>
-            <div class="form-group flex flex-col">
-                <label for="nummatrucle" class="text-sm text-gray-700  mb-1">New Registration number</label>
-                <input name="NumMatricle" type="text" id="nummatrucle" placeholder="Enter the vehicle Sirie"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm" value="<?php if (isset($val[0]['NumImmatriculation']))
-                        echo $val[0]['NumImmatriculation'] ?>">
-            </div>
-                <div class="form-group flex flex-col">
-                    <label for="marque" class="text-sm text-gray-700 mb-1">New Mark</label>
-                    <input name="Mark" type="text" id="marque" placeholder="Enter the vehicle Mark"
-                        class="p-2 border border-gray-300 rounded-lg outline-none text-sm" value="<?php if (isset($val[0]['Marque']))
-                        echo $val[0]['Marque'] ?>">
-                </div>
-                <div class="form-group flex flex-col">
-                    <label for="Model" class="text-sm text-gray-700 mb-1">New Model</label>
-                    <input name="Model" type="text" id="Model" placeholder="Enter the vehicle Model"
-                        class="p-2 border border-gray-300 rounded-lg outline-none text-sm" value="<?php if (isset($val[0]['Modele']))
-                        echo $val[0]['Modele'] ?>">
-                </div>
-                <div class="form-group flex flex-col">
-                    <label for="year" class="text-sm text-gray-700 mb-1">New Year</label>
-                    <input type="number" id="vehicleYear" name="vehYear" min="2008" max="2024" required
-                        placeholder="Enter the vehicle year"
-                        class="p-2 border border-gray-300 rounded-lg outline-none text-sm" value="<?php if (isset($val[0]['Annee']))
-                        echo $val[0]['Annee'] ?>">
-                </div>
-                <div class="form-group flex flex-col">
-                    <label for="carImage" class="text-sm text-gray-700 mb-1">Car Image</label>
-                    <input type="text" name="carImage" id="carImage" accept="image/*"
-                        class="p-2 border border-gray-300 rounded-lg outline-none text-sm" value="<?php if (isset($val[0]['Image']))
-                        echo $val[0]['Image'] ?>">
-                </div>
-                <button type="submit"
-                    class="submit-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
-                    name="editveh">Edit</button>
-                <button type="button" id="colseedit"
-                    class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
-            </form>
+ ?>
+<div id="editCarForm"
+    class="edit-car-form hidden fixed right-[-100%] rounded-xl w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px] bg-white">
+    <form action="" method="post" enctype="multipart/form-data"
+        class="flex flex-col gap-4 overflow-y-auto h-full p-6 pb-20">
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-semibold">Edit Car</h2>
+            <button type="button" id="closeEditForm"
+                class="close-btn bg-red-500 text-white font-extrabold px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">
+                X
+            </button>
         </div>
 
+        <input type="hidden" name="id_vehicle" value="<?php echo htmlspecialchars($car['id_vehicle'] ?? ''); ?>">
 
-        <script src=".././assets/main.js"></script>
+        <div class="form-group flex flex-col">
+            <label for="category" class="text-sm text-gray-700 mb-1">Category</label>
+            <select name="category" id="category" class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+                <?php
+                try {
+                    $category = new Category(null, null, null);
+                    $resultCat = $category->ShowCategory();
+
+                    if ($resultCat) {
+                        foreach ($resultCat as $cat) {
+                            $selected = isset($car['category']) && $cat['id_category'] == $car['category'] ? 'selected' : '';
+                            echo '<option value="' . htmlspecialchars($cat['id_category']) . '" ' . $selected . '>' . htmlspecialchars($cat['name']) . '</option>';
+                        }
+                    } else {
+                        echo '<option value="">No categories found</option>';
+                    }
+                } catch (\PDOException $e) {
+                    echo "Error showing Category: " . $e->getMessage();
+                }
+                ?>
+            </select>
+        </div>
+
+        <div class="form-group flex flex-col">
+            <label for="model" class="text-sm text-gray-700 mb-1">Model</label>
+            <input name="model" type="text" id="model" value="<?php echo htmlspecialchars($car['model'] ?? ''); ?>"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
+        </div>
+
+        <div class="form-group flex flex-col">
+            <label for="price_day" class="text-sm text-gray-700 mb-1">Price/day</label>
+            <input type="number" id="price_day" name="price_day" value="<?php echo htmlspecialchars($car['price_per_day'] ?? ''); ?>"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
+        </div>
+
+        <!-- Continue with similar pattern for other fields -->
+        <div class="form-group flex flex-col">
+            <label for="mileage" class="text-sm text-gray-700 mb-1">Mileage</label>
+            <input type="number" name="mileage" id="mileage" value="<?php echo htmlspecialchars($car['mileage'] ?? ''); ?>"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
+        </div>
+
+        <div class="form-group flex flex-col">
+            <label for="imageVeh" class="text-sm text-gray-700 mb-1">Vehicle Image</label>
+            <input type="file" name="imageVeh" id="imageVeh" accept="image/*"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+            <p class="text-sm text-gray-500 mt-1">Leave empty to keep the current image.</p>
+        </div>
+
+        <button type="submit"
+            class="submit-btn bg-green-500 text-white px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
+            name="submit">Save Changes</button>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const buttonsEdit = document.querySelectorAll('.buttonedit');
+    const editForm = document.getElementById('editCarForm');
+    const closeEditForm = document.getElementById('closeEditForm');
+
+    if (editForm) {
+        buttonsEdit.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                editForm.classList.remove('hidden');
+                editForm.style.right = "0"; 
+            });
+        });
+
+        if (closeEditForm) {
+            closeEditForm.addEventListener('click', () => {
+                editForm.style.right = "-100%"; 
+            });
+        }
+    } else {
+        console.error('Edit form not found');
+    }
+});
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function showVehicleDetails(id) {
+        fetch('view_vehicle.php?id=' + id)
+            .then(response => response.text())
+            .then(data => {
+                Swal.fire({
+                    title: 'Vehicle Details',
+                    html: data, 
+                    icon: 'info',
+                    showCloseButton: true,
+                    confirmButtonText: 'Close'
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching vehicle details:', error);
+            });
+    }
+</script>
+<script src=".././assets/main.js"></script>
     </body>
 
     </html>

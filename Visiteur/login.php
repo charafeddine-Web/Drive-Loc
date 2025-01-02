@@ -9,13 +9,14 @@ $success_message = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
     if (!empty($_POST['email']) && !empty($_POST['password'])) {
         $email = trim($_POST['email']);
-        $password = $_POST['password'];
+        $password = trim($_POST['password']);
 
         $user = User::login($email, $password);
-        var_dump($user);
-        if ($user === true) { 
-            $success_message = "Connexion réussie !";
+        
+        // var_dump($user);
 
+        if ($user == true) { 
+            $success_message = "Connexion réussie !";
             if (isset($_SESSION['id_user']) && $_SESSION['id_role'] == 1) {
                 header("Location: ../admin/index.php");
             } else {
@@ -31,8 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
     }
 }
 
-// Debug : Vérifiez les données de session
-// var_dump($_SESSION);
 ?>
 
 

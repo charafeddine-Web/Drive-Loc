@@ -44,7 +44,7 @@ class Vehicle{
     
                 if (move_uploaded_file($imageTmp, $imagePath)) {
                     echo 'good';
-                } else {
+                } else { 
                     throw new \Exception('Failed to move the uploaded image. Check directory permissions and path.');
                 }
             } else {
@@ -63,7 +63,7 @@ class Vehicle{
             $stmt->bindParam(':fuelType', $this->fuelType);
             $stmt->bindParam(':mileage', $this->mileage);
             $stmt->bindParam(':imageVeh', $sanitizedImageName); 
-            $stmt->bindParam(':idCategory', $idCategory); 
+            $stmt->bindParam(':idCategory', $this->idCategory); 
     
             if ($stmt->execute()) {
                 return true; 
@@ -107,13 +107,13 @@ class Vehicle{
         }
     }
     
-    public function DeleteVeh() {
+    public function DeleteVeh($id_vehicle) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            $sql = "DELETE FROM Vehicle WHERE idVeh = :idVeh";
+            $sql = "DELETE FROM Vehicle WHERE id_vehicle = :idVeh";
             $stmt = $con->prepare($sql);
             
-            $stmt->bindParam(':idVeh', $this->idVeh);
+            $stmt->bindParam(':idVeh', $id_vehicle);
             
             return $stmt->execute();
         } catch (\PDOException $e) {
@@ -160,21 +160,31 @@ class Vehicle{
             return false; 
         }
     }
-    
     public static function ShowDetails($idVeh) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            $sql = "SELECT * FROM Vehicle WHERE idVeh = :idVeh";
+            $sql = "SELECT v.*, c.name AS category_name FROM Vehicle v
+                    INNER JOIN Category c ON c.id_category = v.category_id
+                    WHERE v.id_vehicle = :idVeh";
             $stmt = $con->prepare($sql);
-            
-            $stmt->bindParam(':idVeh', $idVeh);
+            $stmt->bindParam(':idVeh', $idVeh, \PDO::PARAM_INT);
             $stmt->execute();
             
-            return $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(\PDO::FETCH_OBJ); // This returns an array of objects
         } catch (\PDOException $e) {
             echo "Error showing vehicle details: " . $e->getMessage();
             return false;
         }
+    }
+    
+    
+
+    public static function getVehiclesByCategory($category_id) {
+        $pdo = DatabaseConnection::getInstance()->getConnection();
+        $stmt = $pdo->prepare("SELECT * FROM Vehicle WHERE category_id = :category_id");
+        $stmt->bindParam(':category_id', $category_id, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
     
     public static function SearchVeh($keyword) {

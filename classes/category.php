@@ -5,10 +5,15 @@ namespace Classes;
 use Classes\DatabaseConnection;
 class  Category{
     
-    public $name;
-    public $description;
-
-    public function AddCategory($name, $description) {
+    private $name;
+    private $description;
+    private $id_category;
+public function __construct($id_category,$name,$description){
+    $this->id_category=$id_category;
+    $this->name=$name;
+    $this->description=$description;
+}
+    public function AddCategory() {
         try {
             $pdo = DatabaseConnection::getInstance()->getConnection();
             $sql = "INSERT INTO Category(name, description) VALUES (:name, :description)";
@@ -42,16 +47,16 @@ class  Category{
     }
     
 
-    public function DeleteCategory($id) {
+    public function DeleteCategory($category_id) {
         try {
             $pdo = DatabaseConnection::getInstance()->getConnection();
-            $sql = "DELETE FROM Category WHERE id = :id";
+            $sql = "DELETE FROM Category WHERE id_category = :category_id";
             $stmt = $pdo->prepare($sql);
     
-            $stmt->bindParam(':id', $id);
-    
-            return $stmt->execute(); 
-        } catch (\PDOException $e) {
+            $stmt->bindParam(':category_id', $category_id);
+          $stmt->execute();
+     return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    } catch (\PDOException $e) {
             echo "Error deleting category: " . $e->getMessage();
             return false; 
         }
