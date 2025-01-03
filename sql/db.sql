@@ -45,6 +45,7 @@ CREATE TABLE Reservation (
     user_id INT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
+    status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
     pickup_location VARCHAR(255) NOT NULL,
     dropoff_location VARCHAR(255) NOT NULL,
     FOREIGN KEY (vehicle_id) REFERENCES Vehicle(id_vehicle),

@@ -10,10 +10,16 @@ class Admin extends User {
     public function ViewStatistic() {
         try {
             $pdo = DatabaseConnection::getInstance()->getConnection();
-            $query = "SELECT 
-                         (SELECT COUNT(*) FROM users) AS total_users,
-                         (SELECT COUNT(*) FROM Vehicle) AS total_vehicles,
-                         (SELECT COUNT(*) FROM Reservation) AS total_reservations";
+            $query = "
+            SELECT 
+                (SELECT COUNT(*) FROM users) AS total_users,
+                (SELECT COUNT(*) FROM Vehicle) AS total_vehicles,
+                (SELECT COUNT(*) FROM Reservation) AS total_reservations,
+                (SELECT COUNT(*) FROM Reservation WHERE status = 'pending') AS total_res_pen,
+                (SELECT COUNT(*) FROM Reservation WHERE status = 'accepted') AS total_res_acc,
+                (SELECT COUNT(*) FROM Reservation WHERE status = 'rejected') AS total_res_ref
+        ";
+        
             $stmt = $pdo->query($query);
     
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -25,6 +31,9 @@ class Admin extends User {
                     'total_users' => 0,
                     'total_vehicles' => 0,
                     'total_reservations' => 0,
+                    'total_res_pen' => 0,
+                    'total_res_acc' => 0,
+                    'total_res_ref' => 0,
                 ];
             }
         } catch (\PDOException $e) {

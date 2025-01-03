@@ -28,7 +28,7 @@ class Reservation{
     public function AccepteRes($idRes) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            $sql = "UPDATE Reservation SET status = 'Accepted' WHERE idRes = :idRes";
+            $sql = "UPDATE Reservation SET status = 'Accepted' WHERE id_res = :idRes";
             $stmt = $con->prepare($sql);
             $stmt->bindParam(':idRes', $idRes);
             return $stmt->execute();
@@ -41,7 +41,7 @@ class Reservation{
     public function RefuseRes($idRes) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            $sql = "UPDATE Reservation SET status = 'Rejected' WHERE idRes = :idRes";
+            $sql = "UPDATE Reservation SET status = 'Rejected' WHERE id_res = :idRes";
             $stmt = $con->prepare($sql);
             $stmt->bindParam(':idRes', $idRes);
             return $stmt->execute();

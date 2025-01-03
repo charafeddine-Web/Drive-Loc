@@ -90,9 +90,9 @@ try {
                         <li class="text-[#363949]"><a class="active" href="listClients.php">
                                 index &npr;
                             </a></li>
-                        /
-                        <li class="text-[#363949]"><a href="listCars.php" >Clients &npr;</a></li> /
-                        <li class="text-[#363949]"><a href="listContrat.php">Vehicles &npr;</a></li> /
+                        
+                        <li class="text-[#363949]"><a href="listCars.php" >Clients &npr;</a></li> 
+                        <li class="text-[#363949]"><a href="listContrat.php">Vehicles &npr;</a></li> 
                         <li class="text-[#363949]"><a href="statistic.php">Categorys &npr;</a></li>
 
                     </ul>
@@ -104,111 +104,180 @@ try {
                 </a>
             </div>
             <!-- insights-->
-            <ul class="insights grid grid-cols-[repeat(auto-fit,_minmax(240px,_1fr))] gap-[24px] mt-[36px]">
-                <li>
-                    <i class="fa-solid fa-user-group"></i>
-                    <span class="info">
-                        <h3>
-                            <?php
-                                    if ($result && isset($result['total_users'])) {
-                                        echo $result['total_users'];
-                                    } else {
-                                        echo "No data available.";
-                                    }
-                            ?>
-                        </h3>
-                        <p>Clients</p>
-                    </span>
-                </li>
-                <li><i class="fa-solid fa-car-side"></i>
-                    <span class="info">
-                        <h3>
-                            <?php
-                            if ($result && isset($result['total_vehicles'])) {
-                                echo $result['total_vehicles'];
-                            } else {
-                                echo "No data available.";
+            <ul class="insights flex justify-center items-center grid grid-cols-[repeat(3,_minmax(240px,_1fr))] gap-[24px] mt-[36px] w-full mx-auto">
+    <li>
+        <i class="fa-solid fa-user-group"></i>
+        <span class="info">
+            <h3>
+                <?php
+                    if ($result && isset($result['total_users'])) {
+                        echo $result['total_users'];
+                    } else {
+                        echo "No data available.";
+                    }
+                ?>
+            </h3>
+            <p>Clients</p>
+        </span>
+    </li>
+    <li>
+        <i class="fa-solid fa-car-side"></i>
+        <span class="info">
+            <h3>
+                <?php
+                    if ($result && isset($result['total_vehicles'])) {
+                        echo $result['total_vehicles'];
+                    } else {
+                        echo "No data available.";
+                    }
+                ?>
+            </h3>
+            <p>Vehicles</p>
+        </span>
+    </li>
+    <li>
+        <i class="fa-solid fa-file-signature"></i>
+        <span class="info">
+            <h3>
+                <?php
+                    if ($result && isset($result['total_reservations'])) {
+                        echo $result['total_reservations'];
+                    } else {
+                        echo "No data available.";
+                    }
+                ?>
+            </h3>
+            <p>Reservations</p>
+        </span>
+    </li>
+    <li class="flex items-center gap-3">
+    <div class="icon bg-yellow-200  rounded-full">
+        <i class="fa-solid fa-clock text-xl text-yellow-600"></i>
+    </div>
+    <span class="info">
+        <h3 class="text-lg font-semibold">
+            <?php
+                if ($result && isset($result['total_res_pen'])) {
+                    echo $result['total_res_pen'];
+                } else {
+                    echo "No data available.";
+                }
+            ?>
+        </h3>
+        <p>Reservations Pending</p>
+    </span>
+</li>
+<li class="flex items-center gap-3">
+    <div class="icon bg-green-200  rounded-full">
+        <i class="fa-solid fa-check-circle text-xl text-green-600"></i>
+    </div>
+    <span class="info">
+        <h3 class="text-lg font-semibold">
+            <?php
+                if ($result && isset($result['total_res_acc'])) {
+                    echo $result['total_res_acc'];
+                } else {
+                    echo "No data available.";
+                }
+            ?>
+        </h3>
+        <p>Reservations Accepted</p>
+    </span>
+</li>
+<li class="flex items-center gap-3">
+    <div class="icon bg-red-200  rounded-full">
+        <i class="fa-solid fa-times-circle text-xl text-red-600"></i>
+    </div>
+    <span class="info">
+        <h3 class="text-lg font-semibold">
+            <?php
+                if ($result && isset($result['total_res_ref'])) {
+                    echo $result['total_res_ref'];
+                } else {
+                    echo "No data available.";
+                }
+            ?>
+        </h3>
+        <p>Reservations Rejected</p>
+    </span>
+</li>
+
+</ul>
+
+           <!-- Data Content -->
+<div class="bottom-data flex flex-wrap gap-[24px] mt-[24px] w-full">
+    <div class="orders flex-grow flex-[1_0_500px]">
+        <div class="header flex items-center gap-[16px] mb-[24px]">
+            <i class='bx bx-list-check'></i>
+            <h3 class="mr-auto text-[24px] font-semibold">Statistic</h3>
+            <i class='bx bx-filter'></i>
+            <i class='bx bx-search'></i>
+        </div>
+        <!-- Tables -->
+        <table class="w-full border-collapse">
+            <thead>
+                <tr>
+                    <th class="pb-3 px-3 text-sm text-left border-b border-grey">ID Reservation</th>
+                    <th class="pb-3 px-3 text-sm text-left border-b border-grey">Vehicle</th>
+                    <th class="pb-3 px-3 text-sm text-left border-b border-grey">Client</th>
+                    <th class="pb-3 px-3 text-sm text-left border-b border-grey">Start Date</th>
+                    <th class="pb-3 px-3 text-sm text-left border-b border-grey">End Date</th>
+                    <th class="pb-3 px-3 text-sm text-left border-b border-grey">PickUp Location</th>
+                    <th class="pb-3 px-3 text-sm text-left border-b border-grey">DropOff Location</th>
+                    <th class="pb-3 px-5 text-sm text-left border-b border-grey">Status</th>
+                    <th class="pb-3 px-5 text-sm text-left border-b border-grey">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+                try {
+                    $reservation = new Reservation(null, null, null, null, null, null, null, null);
+                    $res = $reservation->ShowAllRes();
+                    if ($res) {
+                        foreach ($res as $r) {
+                            $status = htmlspecialchars($r['status']);
+                            $statusClass = 'text-white';
+
+                            switch ($status) {
+                                case 'pending':
+                                    $statusClass = 'text-yellow-500';
+                                    break;
+                                case 'accepted':
+                                    $statusClass = 'text-green-500';
+                                    break;
+                                case 'rejected':
+                                    $statusClass = 'text-red-500';
+                                    break;
                             }
-                            
-                            ?>
-                        </h3>
-                        <p>Vehicles</p>
-                    </span>
-                </li>
-                <li><i class="fa-solid fa-file-signature"></i>
-                    <span class="info">
-                        <h3>
-                            <?php
-                             if ($result && isset($result['total_reservations'])) {
-                                echo $result['total_reservations'];
-                            } else {
-                                echo "No data available.";
-                            }
-                            ?>
-                        </h3>
-                        <p>Reservations</p>
-                    </span>
-                </li>
-            </ul>
-            <!---- data content ---->
-            <div class="bottom-data flex flex-wrap gap-[24px] mt-[24px] w-full ">
-                <div class="orders  flex-grow flex-[1_0_500px]">
-                    <div class="header  flex items-center gap-[16px] mb-[24px]">
-                        <i class='bx bx-list-check'></i>
-                        <h3 class="mr-auto text-[24px] font-semibold">Statistic</h3>
-                        <i class='bx bx-filter'></i>
-                        <i class='bx bx-search'></i>
-                    </div>
-                    <!--- tables---->
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="">
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">ID Reservation</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Vehicle</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Client </th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Start Date </th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">End Date</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">PickUp Location</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">DropOff Location</th>
-                                <th class="pb-3 px-5 text-sm text-left border-b border-grey">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                           
-                           try {
-                                $reservation= new Reservation(null,null,null,null,null,null,null,null,);
-                                $res=$reservation->ShowAllRes();                   
-                               if ($res) {
-                                   foreach ($res as $r){
-                                       echo "<tr>";
-                                       echo '<td class="border p-2">' . htmlspecialchars($r['id_res']) . '</td>';
-                                       echo '<td class="border p-2">' . htmlspecialchars($r['vehicle_model']) . '</td>';
-                                       echo '<td class="border p-2">' . htmlspecialchars($r['fullname']) . '</td>';
-                                       echo '<td class="border p-2">' . htmlspecialchars($r['start_date']) . '</td>';
-                                       echo '<td class="border p-2">' . htmlspecialchars($r['end_date']) . '</td>';
-                                       echo '<td class="border p-2">' . htmlspecialchars($r['pickup_location']) . '</td>';
-                                       echo '<td class="border p-2"> ' . htmlspecialchars($r['dropoff_location']) . '</td>';
-                                       echo '<td class="border p-2 flex items-center justify-between">';
-                                       echo '<a  href="edit_vehicle.php?id=' . $r['id_res'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
-                                       echo '<a  href="delete_vehicle.php?id_res=' . $r['id_res'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a> | ';
-                                       echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showVehicleDetails(' . $r['id_res'] . ')">View</a>';
-                                       echo '</td>';
-                                       echo "</tr>";
-                                   }
-                               } else {
-                                   echo "<tr><td colspan='8' class='text-center p-2'>No Reservation available.</td></tr>";
-                               }
-                           } catch (PDOException $e) {
-                               echo "<tr><td colspan='8' class='text-center p-2 text-red-500'>Error: " . $e->getMessage() . "</td></tr>";
-                           }
-                           
-                       
-                           ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+                            echo "<tr class='hover:bg-gray-100 transition-all duration-300'>";
+                            echo '<td class="border p-4 text-center text-sm font-medium text-gray-700">' . htmlspecialchars($r['id_res']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['vehicle_model']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['fullname']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['start_date']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['end_date']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['pickup_location']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['dropoff_location']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm ' . $statusClass . ' rounded-lg font-semibold">' . $status . '</td>';
+                            echo '<td class="border p-4 text-center">';
+                            echo '<a href="accepter_res.php?id_reservation=' . $r['id_res'] . '" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-300 mx-2">Accepter</a>';
+                            echo '<a href="refuser_res.php?id_reservation=' . $r['id_res'] . '" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 mx-2">Refuser</a>';
+                            echo '</td>';
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='8' class='text-center p-2'>No Reservation available.</td></tr>";
+                    }
+                } catch (PDOException $e) {
+                    echo "<tr><td colspan='8' class='text-center p-2 text-red-500'>Error: " . $e->getMessage() . "</td></tr>";
+                }
+            ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
         </main>
     </div>
 
