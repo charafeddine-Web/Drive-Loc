@@ -14,7 +14,7 @@ class Vehicle{
     private $imageVeh;
 
 
-    public function __construct($idVeh,$Model,$price_day,$disponibilite,$transmissionType,$fuelType,$mileage,$imageVeh,$idCategory){
+    public function __construct($idVeh=null,$Model=null,$price_day=null,$disponibilite=null,$transmissionType=null,$fuelType=null,$mileage=null,$imageVeh=null,$idCategory=null){
         $this->idVeh=$idVeh;
         $this->Model=$Model;
         $this->price_day=$price_day;
@@ -25,37 +25,69 @@ class Vehicle{
         $this->imageVeh=$imageVeh;
         $this->idCategory=$idCategory;
     }
+    public static function getVehiclesByCategory($categoryId) {
+        $query = "SELECT * FROM vehicle WHERE 1=1";
+        if ($categoryId) {
+            $query .= " AND category_id = :category";
+        }
+    
+        $db = DatabaseConnection::getInstance()->getConnection();
+        $stmt = $db->prepare($query);
+    
+        if ($categoryId) {
+            $stmt->bindValue(':category', $categoryId, \PDO::PARAM_INT);
+        }
+    
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    
+    
+    public static function PaginateVeh($currentPage, $itemsPerPage, $category = null) {
+        $offset = ($currentPage - 1) * $itemsPerPage;
+        $query = "SELECT * FROM Vehicle";
+        if ($category) {
+            $query .= " WHERE id_category = :category";
+        }
+    
+        $query .= " LIMIT :offset, :itemsPerPage";
+        
+        $db = DatabaseConnection::getInstance()->getConnection();
+        $stmt = $db->prepare($query);
+    
+        if ($category) {
+            $stmt->bindValue(':category', $category, \PDO::PARAM_INT);
+        }
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->bindValue(':itemsPerPage', $itemsPerPage, \PDO::PARAM_INT);
+    
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_CLASS, self::class);
+    }
+    
+
+    public static function getTotalVehiclesCount($category = null) {
+        $query = "SELECT COUNT(*) FROM vehicle";
+        if ($category) {
+            $query .= " WHERE id_category = :category";
+        }
+        $db = DatabaseConnection::getInstance()->getConnection();
+        $stmt = $db->prepare($query);
+    
+        if ($category) {
+            $stmt->bindValue(':category', $category, \PDO::PARAM_INT);
+        }
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+    
+
     public function addVeh() {
         try {
-
-            // $uploadDir = realpath(__DIR__ . '/../assets/image/') . '/';
-            // if (!is_dir($uploadDir)) {
-            //     if (!mkdir($uploadDir, 0755, true)) {
-            //         throw new \Exception('Failed to create upload directory.'); 
-            //     }
-            // }
-    
-            // if (isset($_FILES['imageVeh']) && $_FILES['imageVeh']['error'] === UPLOAD_ERR_OK) {
-            //     $imageTmp = $_FILES['imageVeh']['tmp_name'];
-    
-            //     $originalImageName = basename($_FILES['imageVeh']['name']);
-            //     $sanitizedImageName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9\._-]/', '', $originalImageName);
-            //     $imagePath = $uploadDir . $sanitizedImageName;
-    
-            //     if (move_uploaded_file($imageTmp, $imagePath)) {
-            //         echo 'good';
-            //     } else { 
-            //         throw new \Exception('Failed to move the uploaded image. Check directory permissions and path.');
-            //     }
-            // } else {
-            //     throw new \Exception('File upload error or no file uploaded.');
-            // }
-    
             $con = DatabaseConnection::getInstance()->getConnection();
             $sql = "INSERT INTO Vehicle (model, price_per_day, availability, transmissionType, fuelType, mileage, imageVeh, category_id) 
                     VALUES (:model, :price_day, :disponibilite, :transmissionType, :fuelType, :mileage, :imageVeh, :idCategory)";
             $stmt = $con->prepare($sql);
-    
             $stmt->bindParam(':model', $this->Model);
             $stmt->bindParam(':price_day', $this->price_day);
             $stmt->bindParam(':disponibilite', $this->disponibilite);
@@ -170,7 +202,7 @@ class Vehicle{
             $stmt->bindParam(':idVeh', $idVeh, \PDO::PARAM_INT);
             $stmt->execute();
             
-            return $stmt->fetchAll(\PDO::FETCH_OBJ); // This returns an array of objects
+            return $stmt->fetchAll(\PDO::FETCH_OBJ);
         } catch (\PDOException $e) {
             echo "Error showing vehicle details: " . $e->getMessage();
             return false;
@@ -179,13 +211,7 @@ class Vehicle{
     
     
 
-    public static function getVehiclesByCategory($category_id) {
-        $pdo = DatabaseConnection::getInstance()->getConnection();
-        $stmt = $pdo->prepare("SELECT * FROM Vehicle WHERE category_id = :category_id");
-        $stmt->bindParam(':category_id', $category_id, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_OBJ);
-    }
+   
     
     public static function SearchVeh($keyword) {
         try {
@@ -222,7 +248,14 @@ class Vehicle{
             return false;
         }
     }
-    
+    public static function getVehicleById($vehicleId) {
+        $query = "SELECT * FROM vehicle WHERE id_vehicle = :vehicleId";
+        $db = DatabaseConnection::getInstance()->getConnection();
+        $stmt = $db->prepare($query);
+        $stmt->bindValue(':vehicleId', $vehicleId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
    
 
 

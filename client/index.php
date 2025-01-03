@@ -179,83 +179,66 @@ try {
         <?php endif; ?>
     </div>
 
-    <!-- Layout with Sidebar and Main Content -->
     <div class="flex flex-col justify-start md:flex-row gap-8">
         <div class="w-full md:w-1/4 h-auto bg-white p-6 rounded-lg shadow-md border border-gray-200">
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Search and Filter</h3>
             <div class="space-y-6">
-                <!-- Search Bar -->
                 <div>
                     <input type="text" id="searchInput" class="w-full p-4 rounded-md border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search by model..." onkeyup="filterVehicles()">
                 </div>
                 
-                <!-- Category Filter -->
                 <div class="flex flex-col gap-4 ">
-                    <select id="categoryFilter" class="w-full p-3 rounded-md border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">All Categories</option>
-                        <?php foreach ($categories as $category): ?>
-                            <option value="<?php echo $category['id_category']; ?>"><?php echo htmlspecialchars($category['name']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <select id="categoryFilter" class="p-3 rounded-md border border-gray-300">
-                        <option value="">All Categories</option>
-                        <?php foreach ($categories as $category): ?>
-                            <option value="<?php echo $category['id_category']; ?>"><?php echo htmlspecialchars($category['name']); ?></option>
-                        <?php endforeach; ?>
-                   </select>
-
-                    <select id="transmissionFilter" class="p-3 rounded-md border border-gray-300">
-                        <option value="">All Transmission Types</option>
-                        <option value="Automatic">Automatic</option>
-                        <option value="Manual">Manual</option>
-                    </select>
-
-                    <select id="fuelFilter" class="p-3 rounded-md border border-gray-300">
-                        <option value="">All Fuel Types</option>
-                        <option value="Gasoline">Gasoline</option>
-                        <option value="Diesel">Diesel</option>
-                        <option value="Electric">Electric</option>
-                    </select>
-
-                    <input type="number" id="minPrice" class="p-3 rounded-md border border-gray-300" placeholder="Min Price" oninput="filterVehicles()">
-                    <input type="number" id="maxPrice" class="p-3 rounded-md border border-gray-300" placeholder="Max Price" oninput="filterVehicles()">
-            
+                    <div class="filters">
+                        <select id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <?php foreach ($categories as $category): ?>
+                                <option value="<?php echo htmlspecialchars($category['id_category']); ?>">
+                                    <?php echo htmlspecialchars($category['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
               
             </div>
         </div>
+        <div id="vehicleList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
 
-        <!-- Main Content (Categories and Vehicles) -->
+        <?php
+           $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+           $itemsPerPage = 6;
+           $selectedCategory = isset($_GET['category']) ? (int)$_GET['category'] : null;
+           
+           $vehicles = Vehicle::PaginateVeh($currentPage, $itemsPerPage, $selectedCategory);
+           $totalVehicles = Vehicle::getTotalVehiclesCount($selectedCategory);
+           $totalPages = ceil($totalVehicles / $itemsPerPage);
+           
+        ?>
         <div class="w-full md:w-full">
             <div class="space-y-12" id="vehicleList">
                 <?php foreach ($categories as $category): ?>
-                    <!-- Category Section -->
                     <div class="category-section mb-8">
                         <h3 class="text-2xl font-bold text-gray-800 mb-4"><?php echo htmlspecialchars($category['name']); ?></h3>
                         <p class="text-gray-600 mb-8 text-lg"><?php echo htmlspecialchars($category['description']); ?></p>
-
-                        <!-- Vehicle Cards Grid -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                             <?php if (isset($categoryVehicles[$category['id_category']]) && count($categoryVehicles[$category['id_category']]) > 0): ?>
                                 <?php foreach ($categoryVehicles[$category['id_category']] as $vehicle): ?>
-                                    <div class="vehicle-card bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105 relative" data-transmission="<?php echo htmlspecialchars($vehicle->transmissionType); ?>" data-fuel="<?php echo htmlspecialchars($vehicle->fuelType); ?>" data-price="<?php echo $vehicle->price_per_day; ?>" data-model="<?php echo htmlspecialchars($vehicle->model); ?>">
-                                        <!-- Vehicle Image -->
-                                        <img src="../assets/image/<?php echo htmlspecialchars($vehicle->imageVeh); ?>" alt="<?php echo htmlspecialchars($vehicle->model); ?>" class="w-full h-48 object-cover rounded-t-lg mb-4">
+                                    <div class="vehicle-card bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105 relative"  data-fuel="<?php echo $vehicle['fuelType']; ?>" 
+                                        data-price="<?php echo $vehicle['price_per_day']; ?>" 
+                                        data-model="<?php echo $vehicle['model']; ?>">
+                                        <img src="../assets/image/<?php echo htmlspecialchars($vehicle['imageVeh']); ?>" alt="<?php echo htmlspecialchars($vehicle['model']); ?>" class="w-full h-48 object-cover rounded-t-lg mb-4">
                                         
-                                        <!-- Vehicle Details -->
                                         <div class="mt-4 flex flex-col items-center justify-center">
-                                            <h4 class="text-xl font-semibold text-gray-800"><?php echo htmlspecialchars($vehicle->model); ?></h4>
-                                            <p class="text-sm text-gray-500">Transmission: <?php echo htmlspecialchars($vehicle->transmissionType); ?> | Mileage: <?php echo htmlspecialchars($vehicle->mileage); ?>/Km</p>
-                                            <p class="mt-2 text-gray-600">Fuel: <?php echo htmlspecialchars($vehicle->fuelType); ?></p>
-                                            <p class="mt-2 text-gray-600">Price: $<?php echo number_format($vehicle->price_per_day, 2); ?>/day </p>
+                                            <h4 class="text-xl font-semibold text-gray-800"><?php echo htmlspecialchars($vehicle['model']); ?></h4>
+                                            <p class="text-sm text-gray-500">Transmission: <?php echo htmlspecialchars($vehicle['transmissionType']); ?> | Mileage: <?php echo htmlspecialchars($vehicle['mileage']); ?>/Km</p>
+                                            <p class="mt-2 text-gray-600">Fuel: <?php echo htmlspecialchars($vehicle['fuelType']); ?></p>
+                                            <p class="mt-2 text-gray-600">Price: $<?php echo number_format($vehicle['price_per_day'], 2); ?>/day </p>
 
-                                            <!-- View Details Button -->
                                             <button class="mt-4 mx-auto bg-blue-500 hover:bg-blur-700 text-black py-2 px-12 md:px-15 md:py-1 rounded-md ransition duration-200 transform hover:scale-105">
                                                 View Details
                                           </button>
                                         </div>
                                     </div>
-
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <p class="text-gray-600 text-lg">No vehicles available in this category.</p>
@@ -264,10 +247,115 @@ try {
                     </div>
                 <?php endforeach; ?>
             </div>
+            <div class="pagination flex justify-center mt-8">
+                <nav aria-label="Page navigation">
+                    <ul class="flex space-x-2">
+                        <?php
+                        $maxPagesToShow = 5;
+                        $startPage = max(1, $currentPage - floor($maxPagesToShow / 2));
+                        $endPage = min($totalPages, $startPage + $maxPagesToShow - 1);
+
+                        if ($endPage - $startPage + 1 < $maxPagesToShow) {
+                            $startPage = max(1, $endPage - $maxPagesToShow + 1);
+                        }
+                        ?>
+
+                        <?php if ($currentPage > 1): ?>
+                            <li><a href="?page=<?php echo $currentPage - 1; ?>" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg">Previous</a></li>
+                        <?php endif; ?>
+                        
+                        <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                            <li>
+                                <a href="?page=<?php echo $i; ?>" class="px-4 py-2 <?php echo ($i == $currentPage) ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-lg">
+                                    <?php echo $i; ?>
+                                </a>
+                            </li>
+                        <?php endfor; ?>
+                        
+                        <?php if ($currentPage < $totalPages): ?>
+                            <li><a href="?page=<?php echo $currentPage + 1; ?>" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg">Next</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </nav>
+          </div>
         </div>
+        
     </div>
 </div>
+<!-- Modal for Vehicle Reservation -->
+<div id="reservationModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg w-1/3">
+        <h3 id="modalModel" class="text-xl font-semibold text-gray-800"></h3>
+        <p id="modalTransmission" class="text-sm text-gray-500"></p>
+        <p id="modalFuel" class="mt-2 text-gray-600"></p>
+        <p id="modalPrice" class="mt-2 text-gray-600"></p>
 
+        <form id="reservationForm" class="mt-4">
+            <div class="mb-4">
+                <label for="pickupLocation" class="block text-gray-600">Pick-up Location</label>
+                <input type="text" id="pickupLocation" class="w-full p-2 rounded-md border border-gray-300">
+            </div>
+
+            <div class="mb-4">
+                <label for="dropoffLocation" class="block text-gray-600">Drop-off Location</label>
+                <input type="text" id="dropoffLocation" class="w-full p-2 rounded-md border border-gray-300">
+            </div>
+
+            <div class="mb-4">
+                <label for="startDate" class="block text-gray-600">Start Date</label>
+                <input type="date" id="startDate" class="w-full p-2 rounded-md border border-gray-300">
+            </div>
+
+            <div class="mb-4">
+                <label for="endDate" class="block text-gray-600">End Date</label>
+                <input type="date" id="endDate" class="w-full p-2 rounded-md border border-gray-300">
+            </div>
+
+            <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded-md w-full">Reserve Now</button>
+        </form>
+
+        <button id="closeModal" class="mt-4 text-gray-500">Close</button>
+    </div>
+</div>
+<script>
+    // Function to handle click event on a vehicle card
+function handleCardClick(vehicleId) {
+    // Send an AJAX request to get the vehicle details
+    fetch('get_vehicle_details.php', {
+        method: 'POST',
+        body: JSON.stringify({ vehicleId: vehicleId }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update modal with vehicle details
+        document.getElementById('modalModel').innerText = data.model;
+        document.getElementById('modalTransmission').innerText = `Transmission: ${data.transmissionType}`;
+        document.getElementById('modalFuel').innerText = `Fuel: ${data.fuelType}`;
+        document.getElementById('modalPrice').innerText = `Price: $${data.price_per_day}/day`;
+
+        // Show the modal
+        document.getElementById('reservationModal').classList.remove('hidden');
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Close the modal
+document.getElementById('closeModal').addEventListener('click', function() {
+    document.getElementById('reservationModal').classList.add('hidden');
+});
+
+// Attach the event to each vehicle card
+document.querySelectorAll('.vehicle-card').forEach(card => {
+    card.addEventListener('click', function() {
+        const vehicleId = card.getAttribute('data-vehicle-id'); // Assuming each card has a data attribute for vehicle ID
+        handleCardClick(vehicleId);
+    });
+});
+
+</script>
 <script>
     function filterVehicles() {
         const searchInput = document.getElementById("searchInput").value.toLowerCase();
@@ -307,15 +395,11 @@ try {
         </p>
     </div>
 
-    <!-- Reservations List Section -->
     <div id="reservationsList" class="mt-12 space-y-8">
-        <!-- Example Reservation Item -->
         <div class="reservation-card bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105">
             <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                <!-- Vehicle Image -->
                 <img src="../assets/image/vehicle1.jpg" alt="Car Model" class="w-40 h-40 object-cover rounded-md">
                 
-                <!-- Reservation Details -->
                 <div class="flex-1">
                     <h3 class="text-2xl font-semibold text-gray-800">Car Model</h3>
                     <p class="text-sm text-gray-500 mt-2">Reservation Date: <span class="font-semibold">Jan 5, 2025</span></p>
@@ -324,39 +408,9 @@ try {
                     <p class="mt-2 text-gray-600">Total: $<span class="font-semibold">360.00</span></p>
                     
                     <div class="flex gap-4 mt-6">
-                        <!-- Modify Reservation Button -->
                         <button class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition duration-200 transform hover:scale-105">
                             Modify Reservation
                         </button>
-                        <!-- Cancel Reservation Button -->
-                        <button class="bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700 transition duration-200 transform hover:scale-105">
-                            Cancel Reservation
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Another Example Reservation Item -->
-        <div class="reservation-card bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105">
-            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                <!-- Vehicle Image -->
-                <img src="../assets/image/vehicle2.jpg" alt="Car Model" class="w-40 h-40 object-cover rounded-md">
-                
-                <!-- Reservation Details -->
-                <div class="flex-1">
-                    <h3 class="text-2xl font-semibold text-gray-800">Another Car Model</h3>
-                    <p class="text-sm text-gray-500 mt-2">Reservation Date: <span class="font-semibold">Jan 12, 2025</span></p>
-                    <p class="text-sm text-gray-500 mt-2">Duration: <span class="font-semibold">2 days</span></p>
-                    <p class="mt-4 text-lg text-gray-600">Price: $<span class="font-semibold">100.00</span> per day</p>
-                    <p class="mt-2 text-gray-600">Total: $<span class="font-semibold">200.00</span></p>
-                    
-                    <div class="flex gap-4 mt-6">
-                        <!-- Modify Reservation Button -->
-                        <button class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 transition duration-200 transform hover:scale-105">
-                            Modify Reservation
-                        </button>
-                        <!-- Cancel Reservation Button -->
                         <button class="bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700 transition duration-200 transform hover:scale-105">
                             Cancel Reservation
                         </button>
@@ -367,7 +421,47 @@ try {
     </div>
 
 </div>
+<script>
+    function filterByCategory() {
+    const categoryId = document.getElementById('categoryFilter').value;
 
+    const formData = new FormData();
+    formData.append('category', categoryId);
+
+    fetch('filter_vehicles_by_category.php', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => {
+            const vehicleList = document.getElementById('vehicleList');
+            vehicleList.innerHTML = ''; // Clear previous results
+
+            if (data.length > 0) {
+                data.forEach(vehicle => {
+                    vehicleList.innerHTML += `
+                        <div class="vehicle-card bg-white p-4 rounded-lg shadow-lg">
+                            <img src="../assets/image/${vehicle.imageVeh}" alt="${vehicle.model}" class="w-full h-48 object-cover rounded-md mb-4">
+                            <h3 class="text-xl font-semibold">${vehicle.model}</h3>
+                            <p>Transmission: ${vehicle.transmissionType}</p>
+                            <p>Fuel: ${vehicle.fuelType}</p>
+                            <p>Price: $${vehicle.price_per_day}/day</p>
+                        </div>`;
+                });
+            } else {
+                vehicleList.innerHTML = '<p>No vehicles available in this category.</p>';
+            }
+        })
+        .catch(error => console.error('Error fetching vehicles:', error));
+}
+
+// Attach the filter event listener
+document.getElementById('categoryFilter').addEventListener('change', filterByCategory);
+
+// Fetch all vehicles initially
+filterByCategory();
+
+</script>
     <script>
         //pour reserponsive 
     const hamburger = document.getElementById("hamburger");

@@ -23,6 +23,11 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.tailwindcss.com"></script>
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.19/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.19/dist/sweetalert2.min.js"></script>
 
     <link rel="stylesheet" href=".././assets/style.css">
     <script src=".././assets/tailwind.js"></script>
@@ -99,7 +104,7 @@ try {
 
                 </div>
                 <a  href="#"
-                    class="report h-[40px] px-[20px] rounded-[10px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-bold p-6">
+                    class="buttonaddd report h-[40px] px-[20px] rounded-[10px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-bold p-6">
                     <span>Rapport &npr;</span>
                 </a>
             </div>
@@ -368,7 +373,29 @@ try {
             </form>
         </div>
 
+        <script>
+    
+    document.querySelectorAll('.buttonaddd').forEach(function(button) {
+    button.addEventListener('click', function(e) {
+        e.preventDefault(); 
+        Swal.fire({
+            title: '😎 Coming Soon! 🚀',
+            html: `
+                <p>Oops! Looks like this feature is still in the works! <span>🛠️</span></p>
+                <p>We’re not quite ready for it yet, but it will be worth the wait! <span>🍿</span></p>
+                <p>Stay tuned! <span>🎉</span></p>
+            `,
+            icon: 'info',
+            showConfirmButton: true,
+            confirmButtonText: 'Got it! 😅',
+            confirmButtonColor: '#1976D2',
+        });
+    });
+});
 
+
+
+</script>
         <script src=".././assets/main.js"></script>
     </body>
     </html>

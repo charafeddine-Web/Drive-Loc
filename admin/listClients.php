@@ -1,4 +1,20 @@
+<?php
+require_once '../autoload.php'; 
+use Classes\Client;
 
+try {
+   
+    //pour statistic
+    $admin = new Client(null,null,null,null,2);
+    $result = $admin->ShowAllClient();
+    $static= $admin->ViewStatistic();
+    
+    
+} catch (\Exception $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,6 +26,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.tailwindcss.com"></script>
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.19/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.19/dist/sweetalert2.min.js"></script>
 
     <link rel="stylesheet" href=".././assets/style.css">
     <script src=".././assets/tailwind.js"></script>
@@ -85,45 +106,46 @@
                     </ul>
 
                 </div>
-                <!-- <a id="buttonadd" href="#"
-                    class="report h-[36px] px-[16px] rounded-[36px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-medium">
+                <a id="buttonaddd" href="#"
+                    class="buttonaddd report h-[36px] px-[16px] rounded-[36px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-medium">
                     <i class="fa-solid fa-car"></i>
-                    <span>Add Car</span>
-                </a> -->
+                    <span>Add Client</span>
+                </a>
             </div>
             <!-- insights-->
             <ul class="insights grid grid-cols-[repeat(auto-fit,_minmax(240px,_1fr))] gap-[24px] mt-[36px]">
-                <li>
-                    <i class="fa-solid fa-user-group"></i>
-                    <span class="info">
-                        <h3>
-                            <?php
-                            // echo $result['total_clients'];
-                            ?>
-                        </h3>
-                        <p>Clients Reserver</p>
-                    </span>
-                </li>
-                <li><i class="fa-solid fa-car-side"></i>
-                    <span class="info">
-                        <h3>
-                            <?php
-                            // echo $resultv['total_voitures'];
-                            ?>
-                        </h3>
-                        <p>Clients Non Reserver</p>
-                    </span>
-                </li>
-                <!-- <li><i class="fa-solid fa-file-signature"></i>
-                    <span class="info">
-                        <h3>
-                            <?php
-                            // echo $resultc['total_contrats'];
-                            ?>
-                        </h3>
-                        <p>Contrats</p>
-                    </span>
-                </li> -->
+            <li>
+    <i class="fa-solid fa-users"></i>
+    <span class="info">
+        <h3>
+            <?php
+                if ($static && isset($static['total_client_res'])) {
+                    echo $static['total_client_res'];
+                } else {
+                    echo "No data available.";
+                }
+            ?>
+        </h3>
+        <p>Clients with Reservations</p>
+    </span>
+</li>
+<li>
+    <i class="fa-solid fa-users"></i>
+    <span class="info">
+        <h3>
+            <?php
+                if ($static && isset($static['total_client_nres'])) {
+                    echo $static['total_client_nres'];
+                } else {
+                    echo "No data available.";
+                }
+            ?>
+        </h3>
+        <p>Clients without Reservations</p>
+    </span>
+</li>
+
+                
             </ul>
             <!---- data content ---->
             <div class="bottom-data flex flex-wrap gap-[24px] mt-[24px] w-full ">
@@ -138,16 +160,39 @@
                     <table class="w-full border-collapse">
                         <thead>
                             <tr class="">
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Registration number</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Image</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Mark </th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Model </th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Year</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Reservation</th>
-
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Registration ID</th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Full Name</th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Phone Number </th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Email </th>
                                 <th class="pb-3 px-5 text-sm text-left border-b border-grey">Action</th>
                             </tr>
                         </thead>
+                        <tbody>
+            <?php
+                try {
+                    
+                    if (isset($result)  && is_array($result)) {
+                        foreach ($result as $r) {
+                        
+                            echo "<tr class='hover:bg-gray-100 transition-all duration-300'>";
+                            echo '<td class="border p-4 text-center text-sm font-medium text-gray-700">' . htmlspecialchars($r['id_user']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['fullname']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['phone']) . '</td>';
+                            echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['email']) . '</td>';
+                            echo '<td class="border p-4 text-center">';
+                            echo '<a href="banner_user.php?id_user=' . $r['id_user'] . '" class="buttonaddd bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-300 mx-2">Banner Client</a>';
+                            echo '<a href="accepter_user.php?id_user=' . $r['id_user'] . '" class="buttonaddd bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 mx-2">Accepter Client</a>';
+                            echo '</td>';
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='8' class='text-center p-2'>No Client available.</td></tr>";
+                    }
+                } catch (PDOException $e) {
+                    echo "<tr><td colspan='8' class='text-center p-2 text-red-500'>Error: " . $e->getMessage() . "</td></tr>";
+                }
+            ?>
+            </tbody>
 
                     </table>
                 </div>
@@ -242,6 +287,29 @@
             </form>
         </div>
 
+        <script>
+    
+    document.querySelectorAll('.buttonaddd').forEach(function(button) {
+    button.addEventListener('click', function(e) {
+        e.preventDefault(); 
+        Swal.fire({
+            title: '😎 Coming Soon! 🚀',
+            html: `
+                <p>Oops! Looks like this feature is still in the works! <span>🛠️</span></p>
+                <p>We’re not quite ready for it yet, but it will be worth the wait! <span>🍿</span></p>
+                <p>Stay tuned! <span>🎉</span></p>
+            `,
+            icon: 'info',
+            showConfirmButton: true,
+            confirmButtonText: 'Got it! 😅',
+            confirmButtonColor: '#1976D2',
+        });
+    });
+});
+
+
+
+</script>
 
         <script src=".././assets/main.js"></script>
     </body>
