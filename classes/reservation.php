@@ -24,7 +24,28 @@ class Reservation{
         $this->pickup_location=$pickup_location;
         $this->dropoff_location=$dropoff_location;
     }
+    public function addReservation($vehicle_id, $pickup_location, $dropoff_location, $start_date, $end_date) {
+        $pdo = DatabaseConnection::getInstance()->getConnection();
 
+        $sql = "INSERT INTO Reservation (vehicle_id,user_id, pickup_location, dropoff_location, start_date, end_date,status)
+                VALUES (:vehicle_id,:user_id, :pickup_location, :dropoff_location, :start_date, :end_date,:status)";
+
+        $stmt = $pdo->prepare($sql);
+
+        $stmt->bindParam(':vehicle_id', $vehicle_id);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':pickup_location', $pickup_location);
+        $stmt->bindParam(':dropoff_location', $dropoff_location);
+        $stmt->bindParam(':start_date', $start_date);
+        $stmt->bindParam(':end_date', $end_date);
+        $stmt->bindParam(':status', $status);
+
+        if ($stmt->execute()) {
+            return ['success' => 'Reservation successfully added!'];
+        } else {
+            return ['error' => 'Failed to add reservation.'];
+        }
+    }
     public function AccepteRes($idRes) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();

@@ -3,6 +3,7 @@ require_once '../autoload.php';
 
 use Classes\Category;
 use Classes\Vehicle;
+use Classes\Reservation;
 
 try {
  $categories = Category::ShowCategory();
@@ -14,6 +15,19 @@ try {
 } catch (\PDOException $e) {
  echo "Error fetching categories and vehicles: " . $e->getMessage();
  return false;
+}
+
+if (isset($_POST['submit'])) {
+    $vehicle_id = $_POST['vehicle_id'];
+    $pickup_location = $_POST['pickupLocation'];
+    $dropoff_location = $_POST['dropoffLocation'];
+    $start_date = $_POST['startDate'];
+    $end_date = $_POST['endDate'];
+
+    // Create a new Reservation instance
+    $reservation = new Reservation(null,null,null,null,null,null,null,null);
+    $response = $reservation->addReservation( $vehicle_id,$pickup_location, $dropoff_location,$start_date, $end_date );
+    echo json_encode($response);
 }
 
 
@@ -186,7 +200,6 @@ try {
                 <div>
                     <input type="text" id="searchInput" class="w-full p-4 rounded-md border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search by model..." onkeyup="filterVehicles()">
                 </div>
-                
                 <div class="flex flex-col gap-4 ">
                     <div class="filters">
                         <select id="categoryFilter">
@@ -203,16 +216,13 @@ try {
             </div>
         </div>
         <div id="vehicleList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-
         <?php
            $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-           $itemsPerPage = 6;
+           $itemsPerPage = 3;
            $selectedCategory = isset($_GET['category']) ? (int)$_GET['category'] : null;
-           
            $vehicles = Vehicle::PaginateVeh($currentPage, $itemsPerPage, $selectedCategory);
            $totalVehicles = Vehicle::getTotalVehiclesCount($selectedCategory);
-           $totalPages = ceil($totalVehicles / $itemsPerPage);
-           
+           $totalPages = ceil($totalVehicles / $itemsPerPage); 
         ?>
         <div class="w-full md:w-full">
             <div class="space-y-12" id="vehicleList">
@@ -223,23 +233,23 @@ try {
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                             <?php if (isset($categoryVehicles[$category['id_category']]) && count($categoryVehicles[$category['id_category']]) > 0): ?>
                                 <?php foreach ($categoryVehicles[$category['id_category']] as $vehicle): ?>
-                                    <div class="vehicle-card bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105 relative"  data-fuel="<?php echo $vehicle['fuelType']; ?>" 
-                                        data-price="<?php echo $vehicle['price_per_day']; ?>" 
-                                        data-model="<?php echo $vehicle['model']; ?>">
+                                    <div class="vehicle-card bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105 relative"
+                                        data-vehicle-id="<?php echo $vehicle['id_vehicle']; ?>"> <!-- Use id_vehicle for the vehicle ID -->
                                         <img src="../assets/image/<?php echo htmlspecialchars($vehicle['imageVeh']); ?>" alt="<?php echo htmlspecialchars($vehicle['model']); ?>" class="w-full h-48 object-cover rounded-t-lg mb-4">
-                                        
+
                                         <div class="mt-4 flex flex-col items-center justify-center">
                                             <h4 class="text-xl font-semibold text-gray-800"><?php echo htmlspecialchars($vehicle['model']); ?></h4>
                                             <p class="text-sm text-gray-500">Transmission: <?php echo htmlspecialchars($vehicle['transmissionType']); ?> | Mileage: <?php echo htmlspecialchars($vehicle['mileage']); ?>/Km</p>
                                             <p class="mt-2 text-gray-600">Fuel: <?php echo htmlspecialchars($vehicle['fuelType']); ?></p>
                                             <p class="mt-2 text-gray-600">Price: $<?php echo number_format($vehicle['price_per_day'], 2); ?>/day </p>
 
-                                            <button class="mt-4 mx-auto bg-blue-500 hover:bg-blur-700 text-black py-2 px-12 md:px-15 md:py-1 rounded-md ransition duration-200 transform hover:scale-105">
+                                            <button id="details" class="mt-4 mx-auto bg-blue-500 hover:bg-blue-700 text-white py-2 px-12 md:px-15 md:py-1 rounded-md transition duration-200 transform hover:scale-105">
                                                 View Details
-                                          </button>
+                                            </button>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
+
                             <?php else: ?>
                                 <p class="text-gray-600 text-lg">No vehicles available in this category.</p>
                             <?php endif; ?>
@@ -283,102 +293,113 @@ try {
     </div>
 </div>
 <!-- Modal for Vehicle Reservation -->
+<!-- Modal for Vehicle Reservation -->
 <div id="reservationModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
     <div class="bg-white p-6 rounded-lg w-1/3">
+        <div class="flex justify-end">
+            <button id="closeModal" class="mt-4 text-red-500">Close</button>
+        </div>
+        
         <h3 id="modalModel" class="text-xl font-semibold text-gray-800"></h3>
         <p id="modalTransmission" class="text-sm text-gray-500"></p>
         <p id="modalFuel" class="mt-2 text-gray-600"></p>
         <p id="modalPrice" class="mt-2 text-gray-600"></p>
 
-        <form id="reservationForm" class="mt-4">
+        <form id="reservationForm" method="POST" action="" class="mt-4">
+            <input type="hidden" id="vehicle_id" name="vehicle_id" value=""> 
             <div class="mb-4">
                 <label for="pickupLocation" class="block text-gray-600">Pick-up Location</label>
-                <input type="text" id="pickupLocation" class="w-full p-2 rounded-md border border-gray-300">
+                <input type="text" id="pickupLocation" name="pickupLocation" class="w-full p-2 rounded-md border border-gray-300">
             </div>
-
             <div class="mb-4">
                 <label for="dropoffLocation" class="block text-gray-600">Drop-off Location</label>
-                <input type="text" id="dropoffLocation" class="w-full p-2 rounded-md border border-gray-300">
+                <input type="text" id="dropoffLocation" name="dropoffLocation" class="w-full p-2 rounded-md border border-gray-300">
             </div>
-
             <div class="mb-4">
                 <label for="startDate" class="block text-gray-600">Start Date</label>
-                <input type="date" id="startDate" class="w-full p-2 rounded-md border border-gray-300">
+                <input type="date" id="startDate" name="startDate" class="w-full p-2 rounded-md border border-gray-300">
             </div>
-
             <div class="mb-4">
                 <label for="endDate" class="block text-gray-600">End Date</label>
-                <input type="date" id="endDate" class="w-full p-2 rounded-md border border-gray-300">
+                <input type="date" id="endDate" name="endDate" class="w-full p-2 rounded-md border border-gray-300">
             </div>
-
-            <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded-md w-full">Reserve Now</button>
+            <button type="submit" name="submit" class="bg-blue-500 text-white py-2 px-6 rounded-md w-full">Reserve Now</button>
         </form>
-
-        <button id="closeModal" class="mt-4 text-gray-500">Close</button>
     </div>
 </div>
+
+
+
 <script>
-    // Function to handle click event on a vehicle card
-function handleCardClick(vehicleId) {
-    // Send an AJAX request to get the vehicle details
-    fetch('get_vehicle_details.php', {
-        method: 'POST',
-        body: JSON.stringify({ vehicleId: vehicleId }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Update modal with vehicle details
-        document.getElementById('modalModel').innerText = data.model;
-        document.getElementById('modalTransmission').innerText = `Transmission: ${data.transmissionType}`;
-        document.getElementById('modalFuel').innerText = `Fuel: ${data.fuelType}`;
-        document.getElementById('modalPrice').innerText = `Price: $${data.price_per_day}/day`;
-
-        // Show the modal
+ document.querySelectorAll('.vehicle-card').forEach(card => {
+    card.addEventListener('click', function () {
+        const vehicleId = card.getAttribute('data-vehicle-id');
         document.getElementById('reservationModal').classList.remove('hidden');
-    })
-    .catch(error => console.error('Error:', error));
-}
 
-// Close the modal
-document.getElementById('closeModal').addEventListener('click', function() {
-    document.getElementById('reservationModal').classList.add('hidden');
-});
-
-// Attach the event to each vehicle card
-document.querySelectorAll('.vehicle-card').forEach(card => {
-    card.addEventListener('click', function() {
-        const vehicleId = card.getAttribute('data-vehicle-id'); // Assuming each card has a data attribute for vehicle ID
+        console.log(`Clicked Vehicle ID: ${vehicleId}`);
         handleCardClick(vehicleId);
     });
 });
 
-</script>
-<script>
-    function filterVehicles() {
-        const searchInput = document.getElementById("searchInput").value.toLowerCase();
-        const vehicleCards = document.querySelectorAll(".vehicle-card");
-        vehicleCards.forEach((card) => {
-            const model = card.getAttribute("data-model").toLowerCase();
-            const categoryId = card.closest("[data-category-id]").getAttribute("data-category-id");
+function handleCardClick(vehicleId) {
+    console.log("Sending Vehicle ID:", vehicleId); 
 
-            const matchCategory = categoryFilter ? categoryFilter === categoryId : true;
-            const matchSearch = model.includes(searchInput);
+    fetch('get_vehicle_details.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ vehicleId: vehicleId }),
+})
+.then(response => {
+    console.log("Response received:", response);  
+    return response.json(); 
+})
+.then(data => {
+    console.log('Fetched Data:', data); 
 
-            if (matchCategory && matchSearch) {
-                card.style.display = "block";
-            } else {
-                card.style.display = "none";
-            }
-        });
+    if (data.error) {
+        console.error(data.error);
+        return;
     }
+    document.getElementById('modalModel').innerText = data.model || 'N/A';
+    document.getElementById('modalTransmission').innerText = `Transmission: ${data.transmissionType || 'N/A'}`;
+    document.getElementById('modalFuel').innerText = `Fuel: ${data.fuelType || 'N/A'}`;
+    document.getElementById('modalPrice').innerText = `Price: $${data.price_per_day || 'N/A'}/day`;
+
+    document.getElementById('reservationModal').classList.remove('hidden');
+})
+.catch(error => {
+    console.error('Fetch Error:', error);
+});
+
+}
+
+document.getElementById('closeModal').addEventListener('click', function () {
+    document.getElementById('reservationModal').classList.add('hidden');
+});
+
+
+
+    // function filterVehicles() {
+    //     const searchInput = document.getElementById("searchInput").value.toLowerCase();
+    //     const vehicleCards = document.querySelectorAll(".vehicle-card");
+    //     vehicleCards.forEach((card) => {
+    //         const model = card.getAttribute("data-model").toLowerCase();
+    //         const categoryId = card.closest("[data-category-id]").getAttribute("data-category-id");
+
+    //         const matchCategory = categoryFilter ? categoryFilter === categoryId : true;
+    //         const matchSearch = model.includes(searchInput);
+
+    //         if (matchCategory && matchSearch) {
+    //             card.style.display = "block";
+    //         } else {
+    //             card.style.display = "none";
+    //         }
+    //     });
+    // }
 </script>
 
 
 
-    <!-- Reservations Page -->
 <div id="reservationsPage" class="page max-w-7xl mx-auto p-6 bg-gray-50">
     <h2 class="text-3xl font-bold mb-8 text-gray-800">My Reservations</h2>
     
@@ -398,7 +419,7 @@ document.querySelectorAll('.vehicle-card').forEach(card => {
     <div id="reservationsList" class="mt-12 space-y-8">
         <div class="reservation-card bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105">
             <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                <img src="../assets/image/vehicle1.jpg" alt="Car Model" class="w-40 h-40 object-cover rounded-md">
+                <!-- <img src="../assets/image/vehicle1.jpg" alt="Car Model" class="w-40 h-40 object-cover rounded-md"> -->
                 
                 <div class="flex-1">
                     <h3 class="text-2xl font-semibold text-gray-800">Car Model</h3>

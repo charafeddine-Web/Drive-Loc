@@ -1,15 +1,17 @@
 <?php
-
 use Classes\Vehicle;
 header('Content-Type: application/json');
 
-// Get vehicle ID from POST data
 $vehicleId = json_decode(file_get_contents('php://input'))->vehicleId;
 
-// Fetch vehicle details by ID
+if (!$vehicleId) {
+    echo json_encode(['error' => 'No vehicle ID received']);
+    exit;
+}
 $vehicle = Vehicle::getVehicleById($vehicleId);
-
-// Return vehicle details as JSON
+if (!$vehicle) {
+    echo json_encode(['error' => 'Vehicle not found']);
+    exit;
+}
 echo json_encode($vehicle);
 exit;
-?>

@@ -25,22 +25,24 @@ class Vehicle{
         $this->imageVeh=$imageVeh;
         $this->idCategory=$idCategory;
     }
-    public static function getVehiclesByCategory($categoryId) {
-        $query = "SELECT * FROM vehicle WHERE 1=1";
-        if ($categoryId) {
-            $query .= " AND category_id = :category";
-        }
+    // public static function getVehicleById($vehicleId) {
+    //     // Prepare the SQL query
+    //     $query = "SELECT * FROM vehicle WHERE id_vehicle = :vehicleId";
+        
+    //     // Get the database connection
+    //     $db = DatabaseConnection::getInstance()->getConnection();
+    //     $stmt = $db->prepare($query);
+        
+    //     // Bind the vehicleId to the query parameter
+    //     $stmt->bindValue(':vehicleId', $vehicleId, \PDO::PARAM_INT);
+        
+    //     // Execute the query
+    //     $stmt->execute();
+        
+    //     // Fetch the vehicle details
+    //     return $stmt->fetch(\PDO::FETCH_ASSOC);
+    // }
     
-        $db = DatabaseConnection::getInstance()->getConnection();
-        $stmt = $db->prepare($query);
-    
-        if ($categoryId) {
-            $stmt->bindValue(':category', $categoryId, \PDO::PARAM_INT);
-        }
-    
-        $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }
     
     
     public static function PaginateVeh($currentPage, $itemsPerPage, $category = null) {
@@ -208,11 +210,7 @@ class Vehicle{
             return false;
         }
     }
-    
-    
 
-   
-    
     public static function SearchVeh($keyword) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
@@ -233,31 +231,47 @@ class Vehicle{
     public static function FilterVeh($filter) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            
             $sql = "SELECT * FROM Vehicle WHERE fuelType = :fuelType AND price_per_day BETWEEN :minPrice AND :maxPrice";
             $stmt = $con->prepare($sql);
-            
             $stmt->bindParam(':fuelType', $filter['fuelType']);
             $stmt->bindParam(':minPrice', $filter['minPrice']);
             $stmt->bindParam(':maxPrice', $filter['maxPrice']);
             $stmt->execute();
-            
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             echo "Error filtering vehicles: " . $e->getMessage();
             return false;
         }
     }
+
     public static function getVehicleById($vehicleId) {
         $query = "SELECT * FROM vehicle WHERE id_vehicle = :vehicleId";
         $db = DatabaseConnection::getInstance()->getConnection();
         $stmt = $db->prepare($query);
-        $stmt->bindValue(':vehicleId', $vehicleId, PDO::PARAM_INT);
+        $stmt->bindValue(':vehicleId', $vehicleId, \PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
    
-
+    public static function getVehiclesByCategory($categoryId) {
+        $query = "SELECT * FROM vehicle WHERE 1=1";
+        if ($categoryId) {
+            $query .= " AND category_id = :category";
+        }
+        
+        $db = DatabaseConnection::getInstance()->getConnection();
+        $stmt = $db->prepare($query);
+        
+        if ($categoryId) {
+            $stmt->bindValue(':category', $categoryId, \PDO::PARAM_INT);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        
+        return $result ?: [];
+    }
+    
 
 
 }
