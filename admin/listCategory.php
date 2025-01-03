@@ -180,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
                                         echo '<td class="border p-2 flex items-center justify-between">';
                                         echo '<a  href="edit_vehicle.php?id_category=' . $ct['id_category'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
                                         echo '<a  href="delete_category.php?id_category=' . $ct['id_category'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a> | ';
-                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showVehicleDetails(' . $ct['id_category'] . ')">View</a>';
+                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showCategoryDetails(' . $ct['id_category'] . ')">View</a>';
                                         echo '</td>';
                                         echo "</tr>";
                                     }
@@ -275,8 +275,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
                     class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
             </form>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
+        <script>
+    function showCategoryDetails(id) {
+        fetch('view_category.php?id_category=' + id)
+            .then(response => response.text())
+            .then(data => {
+                Swal.fire({
+                    title: 'Category Details',
+                    html: data, 
+                    icon: 'info',
+                    showCloseButton: true,
+                    confirmButtonText: 'Close'
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching Category details:', error);
+            });
+    }
+</script>
         <script src=".././assets/main.js"></script>
     </body>
 

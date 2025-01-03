@@ -19,8 +19,8 @@ public function __construct($id_category,$name,$description){
             $sql = "INSERT INTO Category(name, description) VALUES (:name, :description)";
             $stmt = $pdo->prepare($sql);
     
-            $stmt->bindParam(':name', $name);
-            $stmt->bindParam(':description', $description);
+            $stmt->bindParam(':name', $this->name);
+            $stmt->bindParam(':description', $this->description);
     
             return $stmt->execute(); 
         } catch (\PDOException $e) {
@@ -76,5 +76,22 @@ public function __construct($id_category,$name,$description){
             return false;
         }
     }
+
+
+    public static function ShowDetails($id_category) {
+        try {
+            $con = DatabaseConnection::getInstance()->getConnection();
+            $sql = "SELECT * FROM category WHERE id_category = :id_category";
+            $stmt = $con->prepare($sql);
+            $stmt->bindParam(':id_category', $id_category, \PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_OBJ);
+        } catch (\PDOException $e) {
+            echo "Error showing category details: " . $e->getMessage();
+            return false;
+        }
+    }
+    
+    
     
 }

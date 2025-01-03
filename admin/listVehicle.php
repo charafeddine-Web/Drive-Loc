@@ -2,28 +2,49 @@
 require_once '../autoload.php';
 use Classes\Category;
 use Classes\Vehicle;
-try {
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
-        $model = trim(htmlspecialchars($_POST['model']));
-        $price_day = trim(htmlspecialchars($_POST['price_day']));
-        $disponibilite = trim(htmlspecialchars($_POST['disponibilite']));
-        $transmissionType = trim(htmlspecialchars($_POST['transmissionType']));
-        $fuelType = trim(htmlspecialchars($_POST['fuelType']));
-        $category = trim(htmlspecialchars($_POST['category']));
-        $mileage = trim(htmlspecialchars($_POST['mileage']));
-        $imageVeh=$_FILES['imageVeh'];
-       
 
-        if (empty($model) || empty($price_day) || empty($disponibilite) || empty($transmissionType) || empty($fuelType) || empty($mileage)) {
-            throw new Exception("All fields are required!");
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $models = $_POST['model'];
+        $prices = $_POST['price_day'];
+        $availabilities = $_POST['disponibilite'];
+        $transmissionTypes = $_POST['transmissionType'];
+        $fuelTypes = $_POST['fuelType'];
+        $mileages = $_POST['mileage'];
+        $categories = $_POST['category'];
+        $images = $_FILES['imageVeh'];
+        
+        for ($i = 0; $i < count($models); $i++) {
+            $vehicle = new Vehicle(null,$models[$i],$prices[$i],$availabilities[$i],$transmissionTypes[$i],$fuelTypes[$i],$mileages[$i],$images,$categories[$i]);
+        
+
+            // Handle file upload for each image
+            if (isset($images['tmp_name'][$i]) && $images['error'][$i] === UPLOAD_ERR_OK) {
+                $uploadDir = realpath(__DIR__ . '/../assets/image/') . '/';
+                $imageTmp = $images['tmp_name'][$i];
+                $originalImageName = basename($images['name'][$i]);
+                $sanitizedImageName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9\._-]/', '', $originalImageName);
+                $imagePath = $uploadDir . $sanitizedImageName;
+
+                if (move_uploaded_file($imageTmp, $imagePath)) {
+                    $vehicle->imageVeh = $sanitizedImageName;
+                } else {
+                    throw new Exception("Failed to upload image for vehicle $i.");
+                }
+            }
+
+            // Save the vehicle
+            if (!$vehicle->addVeh()) {
+                throw new Exception("Failed to save vehicle $i.");
+            }
         }
-        $vehicle = new Vehicle(null, $model, $price_day, $disponibilite, $transmissionType, $fuelType, $mileage, $imageVeh,$category);
-        $vehicle->addVeh();
-    }
-} catch (\Exception $e) {
-    echo "Error Adding Vehicle: " . $e->getMessage();
-}
 
+        echo "All vehicles added successfully!";
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
 
 //statistic
 
@@ -236,97 +257,145 @@ $result= Vehicle::showStatistic();
     </div>
 
     <div id="addClientForm"
-        class="add-client-form fixed right-[-100%] rounded-xl w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px] bg-white">
-        <form action="" method="post" enctype="multipart/form-data"
-            class="flex flex-col gap-4 overflow-y-auto h-full p-6 pb-20">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-semibold ">Add Car</h2>
-                <button type="button" id="closeForm"
-                    class="close-btn bg-red-500 text-white font-extrabold px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">
-                    X</button>
-            </div>
+    class="add-client-form fixed right-[-100%] rounded-xl w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px] bg-white">
+    <form action="" method="post" enctype="multipart/form-data"
+        class="flex flex-col gap-4 overflow-y-auto h-full p-6 pb-20" id="vehicleForm">
+        <!-- Header -->
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-semibold">Add Vehicles</h2>
+            <button type="button" id="closeForm"
+                class="close-btn bg-red-500 text-white font-extrabold px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">
+                X
+            </button>
+        </div>
 
+        <!-- Dynamic Vehicle Sections -->
+        <div id="vehicleSections">
+            <!-- Template for Vehicle -->
+            <div class="vehicle-section border-b-2 pb-4 mb-4">
+                <h3 class="text-lg font-semibold mb-2">Vehicle Details</h3>
                 <div class="form-group flex flex-col">
                     <label for="category" class="text-sm text-gray-700 mb-1">Category</label>
-                    <select name="category" id="category" class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+                    <select name="category" class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
                         <?php
                         try {
-                            $category = new Category(null,null,null);
-                            $resultCat = $category->ShowCategory();
                             
+                            $category = new Category(null, null, null);
+                            $resultCat = $category->ShowCategory();
+
                             if ($resultCat) {
                                 foreach ($resultCat as $cat) {
-                                    echo '<option value="' . htmlspecialchars($cat['id_category']) . '">' . htmlspecialchars($cat['name']) . '</option>';
+                                    echo '<option class="text-black" value="' . htmlspecialchars($cat['id_category']) . '">' . htmlspecialchars($cat['name']) . '</option>';
                                 }
                             } else {
                                 echo '<option value="">No categories found</option>';
                             }
                         } catch (\PDOException $e) {
-                            echo "Error showing Category: " . $e->getMessage();
+                            echo '<option value="">Error loading categories</option>';
                         }
                         ?>
                     </select>
                 </div>
 
+                <div class="form-group flex flex-col">
+            <label for="model" class="text-sm text-gray-700 mb-1">Model</label>
+            <input name="model" type="text" id="model" placeholder="Enter the vehicle model"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
+        </div>
 
-            <div class="form-group flex flex-col">
-                <label for="model" class="text-sm text-gray-700 mb-1">Model</label>
-                <input name="model" type="text" id="model" placeholder="Enter the vehicle model"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
+        <!-- Price Per Day -->
+        <div class="form-group flex flex-col">
+            <label for="price_day" class="text-sm text-gray-700 mb-1">Price/day</label>
+            <input type="number" id="price_day" name="price_day" placeholder="Enter the vehicle price/day"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
+        </div>
+
+        <!-- Availability -->
+        <div class="form-group flex flex-col">
+            <label for="disponibilite" class="text-sm text-gray-700 mb-1">Availability</label>
+            <select name="disponibilite" id="disponibilite"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+                <option value="available">Available</option>
+                <option value="unavailable">Unavailable</option>
+            </select>
+        </div>
+
+        <!-- Transmission Type -->
+        <div class="form-group flex flex-col">
+            <label for="transmissionType" class="text-sm text-gray-700 mb-1">Transmission Type</label>
+            <select name="transmissionType" id="transmissionType"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+                <option value="automatic">Automatic</option>
+                <option value="manual">Manual</option>
+            </select>
+        </div>
+
+        <!-- Fuel Type -->
+        <div class="form-group flex flex-col">
+            <label for="fuelType" class="text-sm text-gray-700 mb-1">Fuel Type</label>
+            <select name="fuelType" id="fuelType"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+                <option value="petrol">Petrol</option>
+                <option value="diesel">Diesel</option>
+                <option value="electric">Electric</option>
+            </select>
+        </div>
+
+        <!-- Mileage -->
+        <div class="form-group flex flex-col">
+            <label for="mileage" class="text-sm text-gray-700 mb-1">Mileage</label>
+            <input type="number" name="mileage" id="mileage" placeholder="Enter the vehicle mileage"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
+        </div>
+
+        <!-- Vehicle Image -->
+        <div class="form-group flex flex-col">
+            <label for="imageVeh" class="text-sm text-gray-700 mb-1">Vehicle Image</label>
+            <input type="file" name="imageVeh" id="imageVeh" accept="image/*"
+                class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+        </div>
+
             </div>
+        </div>
 
-            <div class="form-group flex flex-col">
-                <label for="price_day" class="text-sm text-gray-700 mb-1">Price/day</label>
-                <input type="number" id="price_day" name="price_day" placeholder="Enter the vehicle price/day"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
-            </div>
+        <!-- Add/Remove Vehicle Buttons -->
+        <div class="flex justify-between items-center">
+            <button type="button" id="addVehicle"
+                class="bg-green-500 text-white px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">
+                Add Vehicle
+            </button>
+            <button type="button" id="removeVehicle"
+                class="bg-red-500 text-white px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">
+                Remove Vehicle
+            </button>
+        </div>
 
-            <div class="form-group flex flex-col">
-                <label for="disponibilite" class="text-sm text-gray-700 mb-1">Availability</label>
-                <select name="disponibilite" id="disponibilite"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-                    <option value="available">Available</option>
-                    <option value="unavailable">Unavailable</option>
-                </select>
-            </div>
+        <!-- Submit Button -->
+        <button type="submit"
+            class="submit-btn bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out mt-4"
+            name="submit">Submit Vehicles</button>
+    </form>
+</div>
 
-            <div class="form-group flex flex-col">
-                <label for="transmissionType" class="text-sm text-gray-700 mb-1">Transmission Type</label>
-                <select name="transmissionType" id="transmissionType"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-                    <option value="automatic">Automatic</option>
-                    <option value="manual">Manual</option>
-                </select>
-            </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const vehicleSections = document.getElementById('vehicleSections');
+        const addVehicleButton = document.getElementById('addVehicle');
+        const removeVehicleButton = document.getElementById('removeVehicle');
 
-            <div class="form-group flex flex-col">
-                <label for="fuelType" class="text-sm text-gray-700 mb-1">Fuel Type</label>
-                <select name="fuelType" id="fuelType"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-                    <option value="petrol">Petrol</option>
-                    <option value="diesel">Diesel</option>
-                    <option value="electric">Electric</option>
-                </select>
-            </div>
+        addVehicleButton.addEventListener('click', () => {
+            const newSection = vehicleSections.firstElementChild.cloneNode(true);
+            vehicleSections.appendChild(newSection);
+        });
 
-            <div class="form-group flex flex-col">
-                <label for="mileage" class="text-sm text-gray-700 mb-1">Mileage</label>
-                <input type="number" name="mileage" id="mileage" placeholder="Enter the vehicle mileage"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
-            </div>
+        removeVehicleButton.addEventListener('click', () => {
+            if (vehicleSections.children.length > 1) {
+                vehicleSections.lastElementChild.remove();
+            }
+        });
+    });
+</script>
 
-            <div class="form-group flex flex-col">
-                <label for="imageVeh" class="text-sm text-gray-700 mb-1">Vehicle Image</label>
-                <input type="file" name="imageVeh" id="imageVeh" accept="image/*"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-            </div>
-
-            <button type="submit"
-                class="submit-btn bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
-                name="submit">Add Vehicle</button>
-        </form>
-    </div>
-<!-- Edit Car Form -->
 <!-- Edit Car Form -->
  <?php
  if (isset($_GET['id_vehicle'])) {

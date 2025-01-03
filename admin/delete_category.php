@@ -10,7 +10,7 @@ if (isset($_GET['id_category'])) {
         if($st){
             echo '<script>alert("Category deleted successfully.")</script>';
             header('Location: listCategory.php');
-            exit;
+            exit();
         }
        
     } catch (PDOException $e) {
