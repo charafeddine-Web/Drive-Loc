@@ -85,11 +85,11 @@
                     </ul>
 
                 </div>
-                <a id="buttonadd" href="#"
+                <!-- <a id="buttonadd" href="#"
                     class="report h-[36px] px-[16px] rounded-[36px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-medium">
                     <i class="fa-solid fa-car"></i>
                     <span>Add Car</span>
-                </a>
+                </a> -->
             </div>
             <!-- insights-->
             <ul class="insights grid grid-cols-[repeat(auto-fit,_minmax(240px,_1fr))] gap-[24px] mt-[36px]">

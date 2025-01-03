@@ -54,8 +54,8 @@ public function __construct($id_category,$name,$description){
             $stmt = $pdo->prepare($sql);
     
             $stmt->bindParam(':category_id', $category_id);
-          $stmt->execute();
-     return $stmt->fetchAll(\PDO::FETCH_OBJ);
+         
+     return  $stmt->execute();;
     } catch (\PDOException $e) {
             echo "Error deleting category: " . $e->getMessage();
             return false; 

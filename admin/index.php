@@ -1,9 +1,11 @@
 <?php
 require_once '../autoload.php'; 
-
 use Classes\Admin;
+use Classes\Reservation;
 
 try {
+   
+    //pour statistic
     $admin = new Admin(1, "charaf", "charafeddinetbibzat@gmail.com", "0651928482", 1);
     $result = $admin->ViewStatistic();
     
@@ -161,17 +163,49 @@ try {
                     <table class="w-full border-collapse">
                         <thead>
                             <tr class="">
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Registration number</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Image</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Mark </th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Model </th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Year</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Reservation</th>
-
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">ID Reservation</th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Vehicle</th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Client </th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Start Date </th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">End Date</th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">PickUp Location</th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">DropOff Location</th>
                                 <th class="pb-3 px-5 text-sm text-left border-b border-grey">Action</th>
                             </tr>
                         </thead>
-
+                        <tbody>
+                        <?php
+                           
+                           try {
+                                $reservation= new Reservation(null,null,null,null,null,null,null,null,);
+                                $res=$reservation->ShowAllRes();                   
+                               if ($res) {
+                                   foreach ($res as $r){
+                                       echo "<tr>";
+                                       echo '<td class="border p-2">' . htmlspecialchars($r['id_res']) . '</td>';
+                                       echo '<td class="border p-2">' . htmlspecialchars($r['vehicle_model']) . '</td>';
+                                       echo '<td class="border p-2">' . htmlspecialchars($r['fullname']) . '</td>';
+                                       echo '<td class="border p-2">' . htmlspecialchars($r['start_date']) . '</td>';
+                                       echo '<td class="border p-2">' . htmlspecialchars($r['end_date']) . '</td>';
+                                       echo '<td class="border p-2">' . htmlspecialchars($r['pickup_location']) . '</td>';
+                                       echo '<td class="border p-2"> ' . htmlspecialchars($r['dropoff_location']) . '</td>';
+                                       echo '<td class="border p-2 flex items-center justify-between">';
+                                       echo '<a  href="edit_vehicle.php?id=' . $r['id_res'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
+                                       echo '<a  href="delete_vehicle.php?id_res=' . $r['id_res'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a> | ';
+                                       echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showVehicleDetails(' . $r['id_res'] . ')">View</a>';
+                                       echo '</td>';
+                                       echo "</tr>";
+                                   }
+                               } else {
+                                   echo "<tr><td colspan='8' class='text-center p-2'>No Reservation available.</td></tr>";
+                               }
+                           } catch (PDOException $e) {
+                               echo "<tr><td colspan='8' class='text-center p-2 text-red-500'>Error: " . $e->getMessage() . "</td></tr>";
+                           }
+                           
+                       
+                           ?>
+                        </tbody>
                     </table>
                 </div>
             </div>

@@ -5,10 +5,7 @@ use Classes\Category;
 use Classes\Vehicle;
 
 try {
- // Fetch Categories
  $categories = Category::ShowCategory();
-
- // Fetch Vehicles for each category
  $categoryVehicles = [];
  foreach ($categories as $category) {
      $vehicles = Vehicle::getVehiclesByCategory($category['id_category']);

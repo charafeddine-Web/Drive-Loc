@@ -28,28 +28,28 @@ class Vehicle{
     public function addVeh() {
         try {
 
-            $uploadDir = realpath(__DIR__ . '/../assets/image/') . '/';
-            if (!is_dir($uploadDir)) {
-                if (!mkdir($uploadDir, 0755, true)) {
-                    throw new \Exception('Failed to create upload directory.'); 
-                }
-            }
+            // $uploadDir = realpath(__DIR__ . '/../assets/image/') . '/';
+            // if (!is_dir($uploadDir)) {
+            //     if (!mkdir($uploadDir, 0755, true)) {
+            //         throw new \Exception('Failed to create upload directory.'); 
+            //     }
+            // }
     
-            if (isset($_FILES['imageVeh']) && $_FILES['imageVeh']['error'] === UPLOAD_ERR_OK) {
-                $imageTmp = $_FILES['imageVeh']['tmp_name'];
+            // if (isset($_FILES['imageVeh']) && $_FILES['imageVeh']['error'] === UPLOAD_ERR_OK) {
+            //     $imageTmp = $_FILES['imageVeh']['tmp_name'];
     
-                $originalImageName = basename($_FILES['imageVeh']['name']);
-                $sanitizedImageName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9\._-]/', '', $originalImageName);
-                $imagePath = $uploadDir . $sanitizedImageName;
+            //     $originalImageName = basename($_FILES['imageVeh']['name']);
+            //     $sanitizedImageName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9\._-]/', '', $originalImageName);
+            //     $imagePath = $uploadDir . $sanitizedImageName;
     
-                if (move_uploaded_file($imageTmp, $imagePath)) {
-                    echo 'good';
-                } else { 
-                    throw new \Exception('Failed to move the uploaded image. Check directory permissions and path.');
-                }
-            } else {
-                throw new \Exception('File upload error or no file uploaded.');
-            }
+            //     if (move_uploaded_file($imageTmp, $imagePath)) {
+            //         echo 'good';
+            //     } else { 
+            //         throw new \Exception('Failed to move the uploaded image. Check directory permissions and path.');
+            //     }
+            // } else {
+            //     throw new \Exception('File upload error or no file uploaded.');
+            // }
     
             $con = DatabaseConnection::getInstance()->getConnection();
             $sql = "INSERT INTO Vehicle (model, price_per_day, availability, transmissionType, fuelType, mileage, imageVeh, category_id) 
@@ -62,7 +62,7 @@ class Vehicle{
             $stmt->bindParam(':transmissionType', $this->transmissionType);
             $stmt->bindParam(':fuelType', $this->fuelType);
             $stmt->bindParam(':mileage', $this->mileage);
-            $stmt->bindParam(':imageVeh', $sanitizedImageName); 
+            $stmt->bindParam(':imageVeh', $this->imageVeh); 
             $stmt->bindParam(':idCategory', $this->idCategory); 
     
             if ($stmt->execute()) {

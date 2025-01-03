@@ -3,54 +3,68 @@ require_once '../autoload.php';
 use Classes\Category;
 use Classes\Vehicle;
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $models = $_POST['model'];
-        $prices = $_POST['price_day'];
-        $availabilities = $_POST['disponibilite'];
-        $transmissionTypes = $_POST['transmissionType'];
-        $fuelTypes = $_POST['fuelType'];
-        $mileages = $_POST['mileage'];
-        $categories = $_POST['category'];
-        $images = $_FILES['imageVeh'];
-        
-        for ($i = 0; $i < count($models); $i++) {
-            $vehicle = new Vehicle(null,$models[$i],$prices[$i],$availabilities[$i],$transmissionTypes[$i],$fuelTypes[$i],$mileages[$i],$images,$categories[$i]);
-        
+        $models = $_POST['model'] ?? [];
+        $prices = $_POST['price_day'] ?? [];
+        $availabilities = $_POST['disponibilite'] ?? [];
+        $transmissionTypes = $_POST['transmissionType'] ?? [];
+        $fuelTypes = $_POST['fuelType'] ?? [];
+        $mileages = $_POST['mileage'] ?? [];
+        $categories = $_POST['category'] ?? [];
+        $images = $_FILES['imageVeh'] ?? [];
 
-            // Handle file upload for each image
+        if (!is_array($models) || !is_array($prices) || !is_array($availabilities)) {
+            throw new Exception("Invalid form submission.");
+        }
+
+        for ($i = 0; $i < count($models); $i++) {
+            $imageName = null;
+
             if (isset($images['tmp_name'][$i]) && $images['error'][$i] === UPLOAD_ERR_OK) {
-                $uploadDir = realpath(__DIR__ . '/../assets/image/') . '/';
                 $imageTmp = $images['tmp_name'][$i];
                 $originalImageName = basename($images['name'][$i]);
                 $sanitizedImageName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9\._-]/', '', $originalImageName);
+                $uploadDir = realpath(__DIR__ . '/../assets/image/') . '/';
                 $imagePath = $uploadDir . $sanitizedImageName;
 
-                if (move_uploaded_file($imageTmp, $imagePath)) {
-                    $vehicle->imageVeh = $sanitizedImageName;
-                } else {
-                    throw new Exception("Failed to upload image for vehicle $i.");
+                if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+                    throw new Exception('Failed to create upload directory.');
                 }
+
+                if (move_uploaded_file($imageTmp, $imagePath)) {
+                    $imageName = $sanitizedImageName; 
+                } else {
+                    throw new Exception('Failed to move the uploaded image.');
+                }
+            } else {
+                throw new Exception('File upload error or no file uploaded.');
             }
 
-            // Save the vehicle
+            $vehicle = new Vehicle(
+                null,
+                $models[$i],
+                $prices[$i],
+                $availabilities[$i],
+                $transmissionTypes[$i],
+                $fuelTypes[$i],
+                $mileages[$i],
+                $imageName, 
+                $categories[$i]
+            );
+
             if (!$vehicle->addVeh()) {
                 throw new Exception("Failed to save vehicle $i.");
             }
         }
 
-        echo "All vehicles added successfully!";
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
     }
 }
 
 //statistic
-
 $result= Vehicle::showStatistic();
-
-
 
 
 
@@ -258,7 +272,7 @@ $result= Vehicle::showStatistic();
 
     <div id="addClientForm"
     class="add-client-form fixed right-[-100%] rounded-xl w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px] bg-white">
-    <form action="" method="post" enctype="multipart/form-data"
+    <form action="listVehicle.php" method="POST" enctype="multipart/form-data"
         class="flex flex-col gap-4 overflow-y-auto h-full p-6 pb-20" id="vehicleForm">
         <!-- Header -->
         <div class="flex justify-between items-center">
@@ -276,7 +290,7 @@ $result= Vehicle::showStatistic();
                 <h3 class="text-lg font-semibold mb-2">Vehicle Details</h3>
                 <div class="form-group flex flex-col">
                     <label for="category" class="text-sm text-gray-700 mb-1">Category</label>
-                    <select name="category" class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+                    <select name="category[]" class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
                         <?php
                         try {
                             
@@ -299,21 +313,21 @@ $result= Vehicle::showStatistic();
 
                 <div class="form-group flex flex-col">
             <label for="model" class="text-sm text-gray-700 mb-1">Model</label>
-            <input name="model" type="text" id="model" placeholder="Enter the vehicle model"
+            <input name="model[]" type="text" id="model" placeholder="Enter the vehicle model"
                 class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
         </div>
 
         <!-- Price Per Day -->
         <div class="form-group flex flex-col">
             <label for="price_day" class="text-sm text-gray-700 mb-1">Price/day</label>
-            <input type="number" id="price_day" name="price_day" placeholder="Enter the vehicle price/day"
+            <input type="number" id="price_day" name="price_day[]" placeholder="Enter the vehicle price/day"
                 class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
         </div>
 
         <!-- Availability -->
         <div class="form-group flex flex-col">
             <label for="disponibilite" class="text-sm text-gray-700 mb-1">Availability</label>
-            <select name="disponibilite" id="disponibilite"
+            <select name="disponibilite[]" id="disponibilite"
                 class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
                 <option value="available">Available</option>
                 <option value="unavailable">Unavailable</option>
@@ -323,7 +337,7 @@ $result= Vehicle::showStatistic();
         <!-- Transmission Type -->
         <div class="form-group flex flex-col">
             <label for="transmissionType" class="text-sm text-gray-700 mb-1">Transmission Type</label>
-            <select name="transmissionType" id="transmissionType"
+            <select name="transmissionType[]" id="transmissionType"
                 class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
                 <option value="automatic">Automatic</option>
                 <option value="manual">Manual</option>
@@ -333,7 +347,7 @@ $result= Vehicle::showStatistic();
         <!-- Fuel Type -->
         <div class="form-group flex flex-col">
             <label for="fuelType" class="text-sm text-gray-700 mb-1">Fuel Type</label>
-            <select name="fuelType" id="fuelType"
+            <select name="fuelType[]" id="fuelType"
                 class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
                 <option value="petrol">Petrol</option>
                 <option value="diesel">Diesel</option>
@@ -344,14 +358,14 @@ $result= Vehicle::showStatistic();
         <!-- Mileage -->
         <div class="form-group flex flex-col">
             <label for="mileage" class="text-sm text-gray-700 mb-1">Mileage</label>
-            <input type="number" name="mileage" id="mileage" placeholder="Enter the vehicle mileage"
+            <input type="number" name="mileage[]" id="mileage" placeholder="Enter the vehicle mileage"
                 class="p-2 border border-gray-300 rounded-lg outline-none text-sm" required>
         </div>
 
         <!-- Vehicle Image -->
         <div class="form-group flex flex-col">
             <label for="imageVeh" class="text-sm text-gray-700 mb-1">Vehicle Image</label>
-            <input type="file" name="imageVeh" id="imageVeh" accept="image/*"
+            <input type="file" name="imageVeh[]" multiple id="imageVeh" accept="image/*"
                 class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
         </div>
 

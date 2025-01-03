@@ -28,7 +28,7 @@ class Reservation{
     public function AccepteRes($idRes) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            $sql = "UPDATE reservations SET status = 'Accepted' WHERE idRes = :idRes";
+            $sql = "UPDATE Reservation SET status = 'Accepted' WHERE idRes = :idRes";
             $stmt = $con->prepare($sql);
             $stmt->bindParam(':idRes', $idRes);
             return $stmt->execute();
@@ -41,7 +41,7 @@ class Reservation{
     public function RefuseRes($idRes) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            $sql = "UPDATE reservations SET status = 'Rejected' WHERE idRes = :idRes";
+            $sql = "UPDATE Reservation SET status = 'Rejected' WHERE idRes = :idRes";
             $stmt = $con->prepare($sql);
             $stmt->bindParam(':idRes', $idRes);
             return $stmt->execute();
@@ -54,8 +54,16 @@ class Reservation{
     public function ShowAllRes() {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            $sql = "SELECT * FROM reservations";
-            $stmt = $con->prepare($sql);
+            $sql = "SELECT 
+                    r.*, 
+                    c.fullname, 
+                            v.model AS vehicle_model
+                        FROM 
+                            Reservation r
+                        JOIN 
+                            Users c ON r.user_id = c.id_user
+                        JOIN 
+                    Vehicle v ON r.vehicle_id = v.id_vehicle";            $stmt = $con->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll();
         } catch (\PDOException $e) {
@@ -67,7 +75,7 @@ class Reservation{
     public function ShowAllRes_client($idUser) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            $sql = "SELECT * FROM reservations WHERE idUser = :idUser";
+            $sql = "SELECT * FROM Reservation WHERE idUser = :idUser";
             $stmt = $con->prepare($sql);
             $stmt->bindParam(':idUser', $idUser);
             $stmt->execute();

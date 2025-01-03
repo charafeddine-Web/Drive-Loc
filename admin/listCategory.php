@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
                 <div class="orders  flex-grow flex-[1_0_500px]">
                     <div class="header  flex items-center gap-[16px] mb-[24px]">
                         <i class='bx bx-list-check'></i>
-                        <h3 class="mr-auto text-[24px] font-semibold">List Cars</h3>
+                        <h3 class="mr-auto text-[24px] font-semibold">List Category</h3>
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-search'></i>
                     </div>
@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
                     <table class="w-full border-collapse">
                         <thead>
                             <tr class="">
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Registration number</th>
+                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Registration ID</th>
                                 <th class="pb-3 px-3 text-sm text-left border-b border-grey">Name</th>
                                 <th class="pb-3 px-3 text-sm text-left border-b border-grey">Description </th>
                                 <th class="pb-3 px-5 text-sm text-left border-b border-grey">Action</th>
@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
                                         echo '<td class="border p-2">' . htmlspecialchars($ct['description']) . '</td>';
                                         echo '<td class="border p-2 flex items-center justify-between">';
                                         echo '<a  href="edit_vehicle.php?id_category=' . $ct['id_category'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
-                                        echo '<a  href="delete_category.php?id_category=' . $ct['id_category'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a> | ';
+                                        echo '<a href="delete_category.php?id_category=' . $ct['id_category'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this category?\')">Delete</a>';
                                         echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showCategoryDetails(' . $ct['id_category'] . ')">View</a>';
                                         echo '</td>';
                                         echo "</tr>";
@@ -278,7 +278,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script>
-    function showCategoryDetails(id) {
+
+         function showCategoryDetails(id) {
         fetch('view_category.php?id_category=' + id)
             .then(response => response.text())
             .then(data => {
