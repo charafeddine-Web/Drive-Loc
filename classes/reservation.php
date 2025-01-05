@@ -24,28 +24,36 @@ class Reservation{
         $this->pickup_location=$pickup_location;
         $this->dropoff_location=$dropoff_location;
     }
-    public function addReservation($vehicle_id, $pickup_location, $dropoff_location, $start_date, $end_date) {
+    public function addReservation($vehicle_id, $idUser, $pickup_location, $dropoff_location, $start_date, $end_date) {
+        if (empty($idUser)) {
+            return ['error' => 'User ID is missing or invalid.'];
+        }
+    
         $pdo = DatabaseConnection::getInstance()->getConnection();
-
-        $sql = "INSERT INTO Reservation (vehicle_id,user_id, pickup_location, dropoff_location, start_date, end_date,status)
-                VALUES (:vehicle_id,:user_id, :pickup_location, :dropoff_location, :start_date, :end_date,:status)";
-
-        $stmt = $pdo->prepare($sql);
-
+        $query = "INSERT INTO reservation(vehicle_id, user_id, pickup_location, dropoff_location, start_date, end_date)
+                  VALUES (:vehicle_id, :user_id, :pickup_location, :dropoff_location, :start_date, :end_date)";
+        $stmt = $pdo->prepare($query);
+    
         $stmt->bindParam(':vehicle_id', $vehicle_id);
-        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':user_id', $idUser);
         $stmt->bindParam(':pickup_location', $pickup_location);
         $stmt->bindParam(':dropoff_location', $dropoff_location);
         $stmt->bindParam(':start_date', $start_date);
         $stmt->bindParam(':end_date', $end_date);
-        $stmt->bindParam(':status', $status);
-
-        if ($stmt->execute()) {
-            return ['success' => 'Reservation successfully added!'];
-        } else {
-            return ['error' => 'Failed to add reservation.'];
+    
+        try {
+            if ($stmt->execute()) {
+                header('location: ../client/index.php');
+                return ['success' => 'Reservation successful.'];
+            } else {
+                return ['error' => 'Failed to add reservation.'];
+            }
+        } catch (\PDOException $e) {
+            error_log("Error adding reservation: " . $e->getMessage());
+            return ['error' => 'Database error: ' . $e->getMessage()];
         }
     }
+    
     public function AccepteRes($idRes) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
@@ -84,7 +92,8 @@ class Reservation{
                         JOIN 
                             Users c ON r.user_id = c.id_user
                         JOIN 
-                    Vehicle v ON r.vehicle_id = v.id_vehicle";            $stmt = $con->prepare($sql);
+                    Vehicle v ON r.vehicle_id = v.id_vehicle";            
+            $stmt = $con->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll();
         } catch (\PDOException $e) {
@@ -96,7 +105,9 @@ class Reservation{
     public function ShowAllRes_client($idUser) {
         try {
             $con = DatabaseConnection::getInstance()->getConnection();
-            $sql = "SELECT * FROM Reservation WHERE idUser = :idUser";
+            $sql = "SELECT r.*,v.model,v.price_per_day,v.imageVeh FROM Reservation r 
+            inner join Vehicle v  on r.vehicle_id=v.id_vehicle
+            WHERE user_id = :idUser";
             $stmt = $con->prepare($sql);
             $stmt->bindParam(':idUser', $idUser);
             $stmt->execute();

@@ -1,54 +1,12 @@
-<?php
-require_once '../autoload.php';
 
-use Classes\Client;
-
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
-    if (isset($_POST['name'], $_POST['email'], $_POST['password'])) {
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $phone = $_POST['phone'];
-        $password = $_POST['password'];
-
-        if (empty($name) || empty($email) || empty($password) || empty($phone)) {
-            echo "Error: Missing required fields: name, email,phone, or password.";
-            return;
-        }
-
-        $hashpassword = password_hash($password, PASSWORD_BCRYPT);
-
-        if (!$hashpassword) {
-            echo "Password hashing failed.";
-            return;
-        }
-
-        $client = new Client(null, $name, $email, $phone, $hashpassword);
-
-        if ($client->register()) {
-            session_start();
-            $_SESSION['user_id'] = $client->getIduser();  
-            $_SESSION['role_id'] = $client->getIdRole();  
-            $_SESSION['user_name'] = $client->getfull_name(); 
-
-            if ($_SESSION['role_id'] !== 2) {
-                header("Location: ../client/index.php");
-                exit();
-            } else {
-                header("Location: ../admin/index.php");
-                exit();
-            }
-        } else {
-            echo "Échec de l'enregistrement du client.";
-        }
-    } else {
-        echo "Error: Missing required fields.";
-    }
-}
+<?php 
+session_start(); 
+$error_message = isset($_SESSION['error_message']) ? $_SESSION['error_message'] : [];
+$success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : [];
+unset($_SESSION['error_message']);
+unset($_SESSION['success_message']);
 
 ?>
-
-
 
 
 <!DOCTYPE html>
@@ -127,11 +85,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
       <p style="animation: appear 3s ease-out;" class="text-center text-gray-200">
         Sign Up
       </p>
-      <form method="POST" action="" class="space-y-6">
+      <?php if (!empty($error_message)): ?>
+    <div class="bg-red-500 text-white p-4 rounded">
+      <?php foreach ($error_message as $error): ?>
+        <p><?php echo htmlspecialchars($error); ?></p>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if (!empty($success_message)): ?>
+    <div class="bg-green-500 text-white p-4 rounded">
+      <p><?php echo htmlspecialchars($success_message); ?></p>
+    </div>
+  <?php endif; ?>
+      <form method="POST" action="./register_logic.php" class="space-y-6">
         <div class="relative">
           <input placeholder="full name"
             class="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
-            required="" id="name" name="name" type="text" />
+             id="name" name="name" type="text" />
           <label
             class="absolute left-0 -top-3.5 text-gray-100 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-500 peer-focus:text-sm"
             for="name">Full Name</label>
@@ -139,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         <div class="relative">
           <input placeholder="Phone Number"
             class="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
-            required="" id="phone" name="phone" type="text" />
+             id="phone" name="phone" type="text" />
           <label
             class="absolute left-0 -top-3.5 text-gray-100 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-500 peer-focus:text-sm"
             for="phone">Phone</label>
@@ -147,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         <div class="relative">
           <input placeholder="john@example.com"
             class="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
-            required="" id="email" name="email" type="email" />
+             id="email" name="email" type="email" />
           <label
             class="absolute left-0 -top-3.5 text-gray-100 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-500 peer-focus:text-sm"
             for="email">Email address</label>
@@ -155,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         <div class="relative">
           <input placeholder="Password"
             class="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
-            required="" id="password" name="password" type="password" />
+             id="password" name="password" type="password" />
           <label
             class="absolute left-0 -top-3.5 text-gray-100 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-500 peer-focus:text-sm"
             for="password">Password</label>

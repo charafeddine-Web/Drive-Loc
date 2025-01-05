@@ -1,40 +1,11 @@
-<?php
-require_once '../autoload.php'; 
-session_start();
-use Classes\User;
-
-$error_message = [];
-$success_message = ""; 
-
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
-    if (!empty($_POST['email']) && !empty($_POST['password'])) {
-        $email = trim($_POST['email']);
-        $password = trim($_POST['password']);
-
-        $user = User::login($email, $password);
-        
-        // var_dump($user);
-
-        if ($user == true) { 
-            $success_message = "Connexion réussie !";
-            if (isset($_SESSION['id_user']) && $_SESSION['id_role'] == 1) {
-                header("Location: ../admin/index.php");
-            } else {
-                header("Location: ../client/index.php");
-            }
-            exit();
-        } else {
-        
-            $error_message[] = "Email ou mot de passe incorrect.";
-        }
-    } else {
-        $error_message[] = "Veuillez remplir tous les champs.";
-    }
-}
+<?php 
+session_start(); 
+$error_message = isset($_SESSION['error_message']) ? $_SESSION['error_message'] : [];
+$success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : [];
+unset($_SESSION['error_message']);
+unset($_SESSION['success_message']);
 
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -98,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
         </ul>
         <button id="navAction"
           class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
-          <a href="./Visiteur/login.php">Se connecter maintenant</a>
+          <a href="login.php">Se connecter maintenant</a>
         </button>
       </div>
     </div>
@@ -114,23 +85,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
         Sign in to your account
       </p>
       <?php if (!empty($error_message)): ?>
-                <div class="bg-red-500 text-white p-4 rounded">
-                    <?php foreach ($error_message as $error): ?>
-                        <p><?php echo htmlspecialchars($error); ?></p>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+    <div class="bg-red-500 text-white p-4 rounded">
+      <?php foreach ($error_message as $error): ?>
+        <p><?php echo htmlspecialchars($error); ?></p>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
 
-            <?php if (!empty($success_message)): ?>
-                <div class="bg-green-500 text-white p-4 rounded">
-                    <p><?php echo htmlspecialchars($success_message); ?></p>
-                </div>
-            <?php endif; ?>
-      <form method="POST" action="" class="space-y-6">
+  <?php if (!empty($success_message)): ?>
+    <div class="bg-green-500 text-white p-4 rounded">
+      <p><?php echo htmlspecialchars($success_message); ?></p>
+    </div>
+  <?php endif; ?>
+      <form method="POST" action="login_logic.php" class="space-y-6">
         <div class="relative">
           <input placeholder="example@example.com"
             class="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
-            required="" id="email" name="email" type="email" />
+             id="email" name="email" type="email" />
           <label
             class="absolute left-0 -top-3.5 text-gray-100 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-500 peer-focus:text-sm"
             for="email">Email address</label>
@@ -138,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
         <div class="relative">
           <input placeholder="Password"
             class="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
-            required="" id="password" name="password" type="password" />
+             id="password" name="password" type="password" />
           <label
             class="absolute left-0 -top-3.5 text-gray-100 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-500 peer-focus:text-sm"
             for="password">Password</label>

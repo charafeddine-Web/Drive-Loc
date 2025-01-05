@@ -21,49 +21,42 @@ abstract class User{
     }
 
     
-  
-public static function login($email, $password) {
-    $pdo = DatabaseConnection::getInstance()->getConnection();
-    if (!$pdo) {
-        return "Erreur de connexion à la base de données.";
-    }
-
-    $query = "SELECT id_user, id_role, fullname, password FROM users WHERE email = :email";
-    $stmt = $pdo->prepare($query);
-    $stmt->bindParam(':email', $email);
-    $stmt->execute();
-
-    if ($stmt->rowCount() === 1) {
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // error_log("Entered password: " . $password);  
-        // error_log("Stored password hash: " . $user['password']); 
-
-        if (password_verify($password, $user['password'])) {
-            session_start();
-            $_SESSION['id_user'] = $user['id_user'];
-            $_SESSION['id_role'] = $user['id_role'];
-            $_SESSION['fullname'] = $user['fullname'];
-            return true; 
-        } else {
-            
-            error_log("Password verification failed for email: " . $email);
-            return "Mot de passe incorrect.";
+    public static function login($email, $password) {
+        $pdo = DatabaseConnection::getInstance()->getConnection();
+        if (!$pdo) {
+            return "Erreur de connexion à la base de données.";
         }
-    } else {
-        error_log("User not found for email: " . $email);
-        return "Utilisateur introuvable avec cet email.";
+    
+        $query = "SELECT id_user, id_role, fullname, password FROM users WHERE email = :email";
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+    
+        if ($stmt->rowCount() === 1) {
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (password_verify($password, $user['password'])) {
+                return $user; 
+            } else {
+                error_log("Password verification failed for email: " . $email);
+                return "Mot de passe incorrect.";
+            }
+        } else {
+            error_log("User not found for email: " . $email);
+            return "Utilisateur introuvable avec cet email.";
+        }
+    }
+    
+
+
+public static function logout() {
+    session_start();
+    if (isset($_SESSION['id_user'])) {  
+        session_unset();  
+        session_destroy();  
+        header("Location: ../index.html");  
+        exit();
     }
 }
 
-    public static function logout() {
-        session_start();
-        if (isset($_SESSION['user_id'])) {
-            session_unset();
-            session_destroy();
-            header("Location: ../index.html");  
-            exit();
-        }
-    }
 
 }

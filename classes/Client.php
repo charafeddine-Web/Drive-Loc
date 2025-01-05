@@ -4,30 +4,30 @@ namespace Classes;
 use Classes\DatabaseConnection;
 use Classes\User;
 class Client extends User{
-    
+    public function __construct($id_user, $full_name, $email, $phone, $password) {
+        parent::__construct($id_user, $full_name, $email, $phone, 2);
+        $this->password = $password; 
+    }
+   
     public function getIdRole() {
         return $this->id_role;
     }
     public function getIduser() {
         return $this->id_user;
     }
+    public function setfull_name($full_name) {
+        $this->full_name = $full_name;
+    }
 
-public function setfull_name($full_name) {
-    $this->full_name = $full_name;
-}
-
-public function getfull_name() {
-    return $this->full_name;
-}
+    public function getfull_name() {
+        return $this->full_name;
+    }
 
     public function register(){
         try{
             $con=  DatabaseConnection::getInstance()->getConnection();
             $sql="INSERT into users(fullname,phone,email,password,id_role)values(:full_name,:phone,:email,:password,:id_role)";
             $stmt=$con->prepare($sql);
-            // if (!$this->full_name || !$this->email || !$this->password) {
-            //     throw new \Exception("Missing required fields: name, email, or password.");
-            // }
             $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
             $id_role=2;
             $stmt->bindParam(':full_name',$this->full_name);
@@ -36,8 +36,13 @@ public function getfull_name() {
             $stmt->bindParam(':password',$hashedPassword);
             $stmt->bindParam(':id_role', $id_role);
 
-            if($stmt->execute()){
+            if ($stmt->execute()) {
+                $this->id_user = $con->lastInsertId(); 
                 return true;
+            } else {
+                $errorInfo = $stmt->errorInfo();
+                error_log("SQL Error: " . $errorInfo[2]);
+                return false;
             }
 
         }catch (\PDOException $e) {

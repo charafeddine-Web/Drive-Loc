@@ -1,12 +1,18 @@
 <?php
+
 require_once '../autoload.php'; 
 use Classes\Admin;
 use Classes\Reservation;
+session_start();
+
+if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['id_role'] !== 1)) {
+    header("Location: ../index.html");
+    exit;
+}
+
 
 try {
-   
-    //pour statistic
-    $admin = new Admin(1, "charaf", "charafeddinetbibzat@gmail.com", "0651928482", 1);
+       $admin = new Admin(1, "charaf", "charafeddinetbibzat@gmail.com", "0651928482", 1);
     $result = $admin->ViewStatistic();
     
 } catch (\Exception $e) {
@@ -263,7 +269,7 @@ try {
                             echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['end_date']) . '</td>';
                             echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['pickup_location']) . '</td>';
                             echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['dropoff_location']) . '</td>';
-                            echo '<td class="border p-4 text-center text-sm ' . $statusClass . ' rounded-lg font-semibold">' . $status . '</td>';
+                            echo '<td class="border p-4 text-center text-sm ' . $statusClass . ' rounded-lg font-semibold>' . $status . '</td>';
                             echo '<td class="border p-4 text-center">';
                             echo '<a href="accepter_res.php?id_reservation=' . $r['id_res'] . '" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-300 mx-2">Accepter</a>';
                             echo '<a href="refuser_res.php?id_reservation=' . $r['id_res'] . '" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 mx-2">Refuser</a>';
