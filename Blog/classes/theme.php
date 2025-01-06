@@ -28,6 +28,47 @@ class Theme{
         }
     }
     
+    public function EditTheme($idTheme) {
+        $pdo = DatabaseConnection::getInstance()->getConnection();
+        try {
+            $sql = "UPDATE themes SET name = :name, description = :description WHERE idTheme = :idTheme";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(":idTheme", $idTheme, PDO::PARAM_INT);
+            $stmt->bindParam(":name", $this->name, PDO::PARAM_STR);
+            $stmt->bindParam(":description", $this->description, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (\Exception $e) {
+            echo "Error: " . $e->getMessage();
+            return false; 
+        }
+    }
+    
+
+    public function DeleteTheme($idTheme){
+        $pdo = DatabaseConnection::getInstance()->getConnection();
+        try {
+            $sql = "DELETE FROM themes WHERE idTheme = :idTheme";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(":idTheme", $idTheme, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (\Exception $e) {
+            echo "Error: " . $e->getMessage();
+            return false; 
+        }
+    }
+    
+    public function GetThemeDetails($idTheme) {
+        $pdo = DatabaseConnection::getInstance()->getConnection();
+        try {
+            $sql = "SELECT * FROM themes WHERE idTheme = :idTheme";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(":idTheme", $idTheme, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Error fetching theme details: " . $e->getMessage());
+        }
+    }
 
 
     public function ShowThemes(){

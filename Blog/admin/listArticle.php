@@ -144,12 +144,35 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                     </ul>
 
                 </div>
-                <a id="buttonadd" href="#"
-                    class="report h-[36px] px-[16px] rounded-[36px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-medium">
+                <a id="buttonaddd" href="#"
+                    class="buttonaddd report h-[36px] px-[16px] rounded-[36px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-medium">
                     <i class="fa-solid fa-car"></i>
                     <span>Add Article</span>
                 </a>
             </div>
+            <script>
+    
+    document.querySelectorAll('.buttonaddd').forEach(function(button) {
+    button.addEventListener('click', function(e) {
+        e.preventDefault(); 
+        Swal.fire({
+            title: '😎 Coming Soon! 🚀',
+            html: `
+                <p>Oops! Looks like this feature is still in the works! <span>🛠️</span></p>
+                <p>We’re not quite ready for it yet, but it will be worth the wait! <span>🍿</span></p>
+                <p>Stay tuned! <span>🎉</span></p>
+            `,
+            icon: 'info',
+            showConfirmButton: true,
+            confirmButtonText: 'Got it! 😅',
+            confirmButtonColor: '#1976D2',
+        });
+    });
+});
+
+
+
+</script>
             <!-- insights-->
             <!-- <ul class="insights grid grid-cols-[repeat(auto-fit,_minmax(240px,_1fr))] gap-[24px] mt-[36px]">
                 <li>

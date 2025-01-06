@@ -1,5 +1,5 @@
 <?php
-// require_once '../autoload.php';
+require_once '../classes/Tage.php';
 session_start();
 
 if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['id_role'] !== 1)) {
@@ -134,20 +134,18 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                 <div class="left">
                 <ul class="breadcrumb flex items-center space-x-[16px]">
                         <li class="text-[#363949]"><a  href="listClients.php">
-                                index &npr;
+                                Themes &npr;
                             </a></li>
                         /
-                        <li class="text-[#363949]"><a href="listCars.php"  >Clients &npr;</a></li> /
-                        <li class="text-[#363949]"><a href="listContrat.php">Vehicles &npr;</a></li> /
-                        <li class="text-[#363949]"><a href="statistic.php" class="active">Categorys &npr;</a></li>
-
+                        <li class="text-[#363949]"><a href="listCars.php"  >Articles &npr;</a></li> /
+                        <li class="text-[#363949]"><a class="active" href="listContrat.php">Tags &npr;</a></li> /
+                        <li class="text-[#363949]"><a href="statistic.php" >Comments &npr;</a></li>
                     </ul>
-
                 </div>
                 <a id="buttonadd" href="#"
                     class="report h-[36px] px-[16px] rounded-[36px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-medium">
                     <i class="fa-solid fa-car"></i>
-                    <span>Add Category</span>
+                    <span>Add Tags</span>
                 </a>
             </div>
             <!-- insights-->
@@ -199,7 +197,6 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                             <tr class="">
                                 <th class="pb-3 px-3 text-sm text-left border-b border-grey">Registration ID</th>
                                 <th class="pb-3 px-3 text-sm text-left border-b border-grey">Name</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Description </th>
                                 <th class="pb-3 px-5 text-sm text-left border-b border-grey">Action</th>
                             </tr>
                         </thead>
@@ -207,23 +204,22 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                             <?php
                            
                             try {
-                                $category = Category::ShowCategory();
-                    
-                                if ($category) {
-                                    foreach ($category as $ct) {
+                                $tag = new Tag();
+                                $rs=$tag->GetTags();
+                                if ($tag) {
+                                    foreach ($rs as $r) {
                                         echo "<tr>";
-                                        echo '<td class="border p-2">' . htmlspecialchars($ct['id_category']) . '</td>';
-                                        echo '<td class="border p-2">' . htmlspecialchars($ct['name']) . '</td>';
-                                        echo '<td class="border p-2">' . htmlspecialchars($ct['description']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($r['idTag']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($r['name']) . '</td>';
                                         echo '<td class="border p-2 flex items-center justify-between">';
-                                        echo '<a  href="edit_vehicle.php?id_category=' . $ct['id_category'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
-                                        echo '<a href="delete_category.php?id_category=' . $ct['id_category'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this category?\')">Delete</a>';
-                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showCategoryDetails(' . $ct['id_category'] . ')">View</a>';
+                                        echo '<a  href="edit_tag.php?idTag=' . $r['idTag'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
+                                        echo '<a href="delete_tag.php?idTag=' . $r['idTag'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this category?\')">Delete</a>';
+                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showCategoryDetails(' . $r['idTag'] . ')">View</a>';
                                         echo '</td>';
                                         echo "</tr>";
                                     }
                                 } else {
-                                    echo "<tr><td colspan='8' class='text-center p-2'>No Category available.</td></tr>";
+                                    echo "<tr><td colspan='8' class='text-center p-2'>No Tags available.</td></tr>";
                                 }
                             } catch (PDOException $e) {
                                 echo "<tr><td colspan='8' class='text-center p-2 text-red-500'>Error: " . $e->getMessage() . "</td></tr>";
@@ -241,11 +237,11 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
     <div id="addClientForm"
         class="add-client-form fixed rounded-xl right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
         <form action="" method="post" class="flex flex-col gap-4">
-        <h2 class="text-2xl font-semibold mb-5">Add Category</h2>
+        <h2 class="text-2xl font-semibold mb-5">Add Tags</h2>
         
         <!-- Category Name -->
         <div class="form-group flex flex-col">
-            <label for="categoryName" class="text-sm text-gray-700 mb-1">Category Name</label>
+            <label for="categoryName" class="text-sm text-gray-700 mb-1">Tag Name</label>
             <input name="categoryName" type="text" id="categoryName" placeholder="Enter category name"
                 class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
         </div>
