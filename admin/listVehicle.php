@@ -2,6 +2,12 @@
 require_once '../autoload.php';
 use Classes\Category;
 use Classes\Vehicle;
+session_start();
+
+if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['id_role'] !== 1)) {
+    header("Location: ../index.html");
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
