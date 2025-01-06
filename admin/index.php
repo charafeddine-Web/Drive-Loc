@@ -269,7 +269,7 @@ try {
                             echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['end_date']) . '</td>';
                             echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['pickup_location']) . '</td>';
                             echo '<td class="border p-4 text-center text-sm text-gray-700">' . htmlspecialchars($r['dropoff_location']) . '</td>';
-                            echo '<td class="border p-4 text-center text-sm ' . $statusClass . ' rounded-lg font-semibold>' . $status . '</td>';
+                            echo '<td class="border p-4 text-center text-sm ' . $statusClass . ' rounded-lg font-semibold">' . $status . '</td>';
                             echo '<td class="border p-4 text-center">';
                             echo '<a href="accepter_res.php?id_reservation=' . $r['id_res'] . '" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-300 mx-2">Accepter</a>';
                             echo '<a href="refuser_res.php?id_reservation=' . $r['id_res'] . '" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 mx-2">Refuser</a>';
