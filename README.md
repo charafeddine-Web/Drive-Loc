@@ -50,7 +50,7 @@ Ce projet a été développé en utilisant **PHP POO** et **SQL** pour garantir 
 ## Installation
 1. Clonez le dépôt :
    ```bash
-   git clone <URL_DU_DEPOT>
+   git clone <https://github.com/charafeddine-Web/Drive-Loc.git>
    ```
 2. Configurez la base de données en important le fichier `schema.sql` dans votre serveur MySQL.
 3. Configurez les identifiants de connexion à la base de données dans le fichier `config.php`.
