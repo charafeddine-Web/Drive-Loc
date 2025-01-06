@@ -30,8 +30,7 @@ class Reservation{
         }
     
         $pdo = DatabaseConnection::getInstance()->getConnection();
-        $query = "INSERT INTO reservation(vehicle_id, user_id, pickup_location, dropoff_location, start_date, end_date)
-                  VALUES (:vehicle_id, :user_id, :pickup_location, :dropoff_location, :start_date, :end_date)";
+        $query = "CALL AjouterReservation(:vehicle_id, :user_id, :pickup_location, :dropoff_location, :start_date, :end_date)";
         $stmt = $pdo->prepare($query);
     
         $stmt->bindParam(':vehicle_id', $vehicle_id);
@@ -51,6 +50,19 @@ class Reservation{
         } catch (\PDOException $e) {
             error_log("Error adding reservation: " . $e->getMessage());
             return ['error' => 'Database error: ' . $e->getMessage()];
+        }
+    }
+
+    public function deleteReservation($id) {
+        $pdo = DatabaseConnection::getInstance()->getConnection();
+
+        try {
+            $query = "DELETE FROM reservation WHERE id_res = :id";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            return false;
         }
     }
     
@@ -119,6 +131,11 @@ class Reservation{
     }
     
 
-
-
+     public static function editReservation($id_reservation, $start_date, $end_date, $pickup_location, $dropoff_location) {
+        $pdo= DatabaseConnection::getInstance()->getConnection();
+        $sql = "UPDATE reservation SET start_date = ?, end_date = ?, pickup_location = ?, dropoff_location = ? WHERE id_res = ?";
+        $stmt = $pdo->prepare($sql);
+        return $stmt->execute([$start_date, $end_date, $pickup_location, $dropoff_location, $id_reservation]);
+    }
+    
 }

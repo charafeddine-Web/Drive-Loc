@@ -221,6 +221,7 @@ $result = Vehicle::showStatistic();
                     <th class="pb-3 px-3 text-sm text-left border-b border-grey">Registration number</th>
                     <th class="pb-3 px-3 text-sm text-left border-b border-grey">Image</th>
                     <th class="pb-3 px-3 text-sm text-left border-b border-grey">Model</th>
+                    <th class="pb-3 px-3 text-sm text-left border-b border-grey">Category</th>
                     <th class="pb-3 px-3 text-sm text-left border-b border-grey">Price/day</th>
                     <th class="pb-3 px-3 text-sm text-left border-b border-grey">Transmission Type</th>
                     <th class="pb-3 px-5 text-sm text-left border-b border-grey">Fuel Type</th>
@@ -236,23 +237,24 @@ $result = Vehicle::showStatistic();
 
                     if ($vehicle) {
                         foreach ($vehicle as $vh) {
-                            $availabilityColor = $vh['availability'] === 'Available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                            $availabilityText = ucfirst($vh['availability']);
+                            $availabilityColor = $vh['vehicle_availability'] === 'Available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                            $availabilityText = ucfirst($vh['vehicle_availability']);
                             echo "<tr class='hover:bg-gray-50 transition-all duration-300'>";
-                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['id_vehicle']) . '</td>';
-                            echo '<td class="border p-4"><img src="../assets/image/' . htmlspecialchars($vh['imageVeh']) . '" alt="Vehicle Image" class="w-24 h-24 rounded-lg shadow-md" /></td>';
-                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['model']) . '</td>';
-                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['price_per_day']) . '</td>';
-                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['transmissionType']) . '</td>';
-                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['fuelType']) . '</td>';
-                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['mileage']) . '</td>';
+                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['vehicle_id']) . '</td>';
+                            echo '<td class="border p-4"><img src="../assets/image/' . htmlspecialchars($vh['vehicle_image']) . '" alt="Vehicle Image" class="w-24 h-24 rounded-lg shadow-md" /></td>';
+                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['vehicle_model']) . '</td>';
+                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['category_name']) . '</td>';
+                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['vehicle_price_per_day']) . '</td>';
+                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['vehicle_transmission']) . '</td>';
+                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['vehicle_fuel_type']) . '</td>';
+                            echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($vh['vehicle_mileage']) . '</td>';
                             echo '<td class="border p-4"><span class="' . $availabilityColor . ' px-2 py-1 rounded-full text-center">' . $availabilityText . '</span></td>';
                             echo '<td class="border p-4 flex space-x-2">';
-                            echo '<a href="edit_vehicle.php?id=' . $vh['id_vehicle'] . '" class="text-blue-600 hover:text-blue-800 font-semibold">Edit</a>';
+                            echo '<a href="edit_vehicle.php?id=' . $vh['vehicle_id'] . '" class="text-blue-600 hover:text-blue-800 font-semibold">Edit</a>';
                             echo '|';
-                            echo '<a href="delete_vehicle.php?id_vehicle=' . $vh['id_vehicle'] . '" class="text-red-600 hover:text-red-800 font-semibold" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a>';
+                            echo '<a href="delete_vehicle.php?id_vehicle=' . $vh['vehicle_id'] . '" class="text-red-600 hover:text-red-800 font-semibold" onclick="return confirm(\'Are you sure you want to delete this vehicle?\')">Delete</a>';
                             echo '|';
-                            echo '<a href="javascript:void(0);" class="text-green-600 hover:text-green-800 font-semibold" onclick="showVehicleDetails(' . $vh['id_vehicle'] . ')">View</a>';
+                            echo '<a href="javascript:void(0);" class="text-green-600 hover:text-green-800 font-semibold" onclick="showVehicleDetails(' . $vh['vehicle_id'] . ')">View</a>';
                             echo '</td>';
                             echo "</tr>";
                         }
