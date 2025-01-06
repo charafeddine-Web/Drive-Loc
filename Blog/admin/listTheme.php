@@ -1,6 +1,6 @@
 <?php
-require_once '../autoload.php';
-use Classes\Category;
+// require_once '../autoload.php';
+require_once '../classes/theme.php';
 session_start();
 
 if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['id_role'] !== 1)) {
@@ -8,23 +8,26 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
-    $categoryName = $_POST['categoryName'];
-    $categoryDescription = $_POST['categoryDescription'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addTheme'])) {
+    $themeName = $_POST['themeName'];
+    $themeDescription = $_POST['themeDescription'];
 
-    if (!empty($categoryName) && !empty($categoryDescription)) {
+    if (!empty($themeName) && !empty($themeDescription)) {
         try {
-            $category = new Category(null,$categoryName, $categoryDescription);
-            $category->AddCategory();  
-            header('Location: listCategory.php');
+            $category = new theme(null,null, null);
+            $category->AddTheme($themeName, $themeDescription);  
+            header('Location: listTheme.php');
             exit();  
         } catch (Exception $e) {
-            echo 'Error adding category: ' . $e->getMessage();
+            echo 'Error adding Theme: ' . $e->getMessage();
         }
     } else {
         echo 'Please fill in both fields.';
     }
 }
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet" href=".././assets/style.css">
+    <link rel="stylesheet" href="../../assets/style.css">
     <script src=".././assets/tailwind.js"></script>
 </head>
 
@@ -55,10 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
     </a>
     
     <ul class="side-menu w-full mt-12">
-        <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"><i class="fa-solid fa-file-contract"></i>Statistic</a></li>
-        <li class="h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php"><i class="fa-solid fa-user-group"></i>Clients</a></li>
-        <li class="h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listVehicle.php"><i class="fa-solid fa-car"></i>Vehicles</a></li>
-        <li class="active h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listCategory.php"><i class="fa-solid fa-chart-simple"></i>Category</a></li>
+        <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="../../admin/index.php"><i class="fa-solid fa-file-contract"></i>Statistic</a></li>
+        <li class="h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="../../admin/listClients.php"><i class="fa-solid fa-user-group"></i>Clients</a></li>
+        <li class="h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="../../admin/listVehicle.php"><i class="fa-solid fa-car"></i>Vehicles</a></li>
+        <li class="h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="../../admin/listCategory.php"><i class="fa-solid fa-chart-simple"></i>Category</a></li>
         
         <li class="h-12 bg-transparent ml-1.5 rounded-l-full p-1">
             <a href="" class="blog-management">
@@ -67,25 +70,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
             </a>
         </li>
         
-        <li class="h-12 ml-8 bg-transparent  rounded-l-full p-1">
-            <a href="../Blog/admin/listTheme.php" class="Themes-management">
+        <li class="active h-12 ml-8 bg-transparent  rounded-l-full p-1">
+            <a href="./listTheme.php" class="Themes-management">
                 <i class="fa-solid fa-palette"></i> Themes
             </a>
         </li>
         
-        <li class="h-12 bg-transparent ml-8 rounded-l-full p-1">
-            <a href="../Blog/admin/listArticle.php" class="Articles-management">
+        <li class=" h-12 bg-transparent ml-8 rounded-l-full p-1">
+            <a href="./listArticle.php" class="Articles-management">
                 <i class="fa-solid fa-newspaper"></i> Articles
             </a>
         </li>
         
-        <li class="h-12 bg-transparent ml-8 rounded-l-full p-1">
-            <a href="../Blog/admin/listTags.php" class="Tags-management">
+        <li class=" h-12 bg-transparent ml-8 rounded-l-full p-1">
+            <a href="./listTags.php" class="Tags-management">
                 <i class="fa-solid fa-tags"></i> Tags
             </a>
         </li>
-        <li class="h-12 bg-transparent ml-8 rounded-l-full p-1">
-            <a href="../Blog/admin/listcomments.php" class="Comments-management">
+        <li class=" h-12 bg-transparent ml-8 rounded-l-full p-1">
+            <a href="./listcomments.php" class="Comments-management">
                 <i class="fa-solid fa-comments"></i> Comments
             </a>
         </li>
@@ -93,12 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
 
     <ul class="side-menu w-full mt-20">
         <li class="h-12 bg-transparent ml-2.5 rounded-l-full p-1">
-            <a href="../Visiteur/logout.php" class="logout">
+            <a href="../../Visiteur/logout.php" class="logout">
                 <i class="bx bx-log-out-circle"></i> Logout
             </a>
         </li>
     </ul>
 </div>
+
     <!-- end sidebar -->
     <!-- Content -->
     <div class="content ">
@@ -124,10 +128,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
                     class="count absolute top-[-6px] right-[-6px] w-[20px] h-[20px] bg-[#D32F2F] text-[#f6f6f6] border-2 border-[#f6f6f9] font-semibold text-[12px] flex items-center justify-center rounded-full ">12</span>
             </a>
             <a href="#" class="profile">
-            <img class="w-[36px] h-[36px] object-cover rounded-full" width="36" height="36" src=".././assets/image/charaf.png.jfif">
+            <img class="w-[36px] h-[36px] object-cover rounded-full" width="36" height="36" src="../../assets/image/charaf.png.jfif">
             </a>
         </nav>
-
         <!-- end nav -->
         <main class=" mainn w-full p-[36px_24px] max-h-[calc(100vh_-_56px)]">
             <div class="header flex items-center justify-between gap-[16px] flex-wrap">
@@ -189,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
                 <div class="orders  flex-grow flex-[1_0_500px]">
                     <div class="header  flex items-center gap-[16px] mb-[24px]">
                         <i class='bx bx-list-check'></i>
-                        <h3 class="mr-auto text-[24px] font-semibold">List Category</h3>
+                        <h3 class="mr-auto text-[24px] font-semibold">List Themes</h3>
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-search'></i>
                     </div>
@@ -207,18 +210,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
                             <?php
                            
                             try {
-                                $category = Category::ShowCategory();
-                    
-                                if ($category) {
-                                    foreach ($category as $ct) {
+                                $theme = new  theme(null,null,null);
+                                $result=$theme->ShowThemes();
+                                if ($theme) {
+                                    foreach ($result as $rs) {
                                         echo "<tr>";
-                                        echo '<td class="border p-2">' . htmlspecialchars($ct['id_category']) . '</td>';
-                                        echo '<td class="border p-2">' . htmlspecialchars($ct['name']) . '</td>';
-                                        echo '<td class="border p-2">' . htmlspecialchars($ct['description']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($rs['idTheme']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($rs['name']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars($rs['description']) . '</td>';
                                         echo '<td class="border p-2 flex items-center justify-between">';
-                                        echo '<a  href="edit_vehicle.php?id_category=' . $ct['id_category'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
-                                        echo '<a href="delete_category.php?id_category=' . $ct['id_category'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this category?\')">Delete</a>';
-                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showCategoryDetails(' . $ct['id_category'] . ')">View</a>';
+                                        echo '<a  href="edit_theme.php?idTheme=' . $rs['idTheme'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
+                                        echo '<a href="delete_theme.php?idTheme=' . $rs['idTheme'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this category?\')">Delete</a>';
+                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showCategoryDetails(' . $rs['idTheme'] . ')">View</a>';
                                         echo '</td>';
                                         echo "</tr>";
                                     }
@@ -238,32 +241,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
         </main>
     </div>
 
-    <div id="addClientForm"
-        class="add-client-form fixed rounded-xl right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
-        <form action="" method="post" class="flex flex-col gap-4">
-        <h2 class="text-2xl font-semibold mb-5">Add Category</h2>
+   
+    <div id="addClientForm" class="add-client-form fixed right-[-100%] w-full max-w-[400px] h-[650px] shadow-lg p-8 flex flex-col gap-6 transition-all duration-700 ease-in-out z-50 top-[166px] bg-white rounded-lg">
+    <form action="" method="post" class="flex flex-col gap-6">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Add Theme</h2>
         
-        <!-- Category Name -->
+        <!-- Theme Name -->
         <div class="form-group flex flex-col">
-            <label for="categoryName" class="text-sm text-gray-700 mb-1">Category Name</label>
-            <input name="categoryName" type="text" id="categoryName" placeholder="Enter category name"
-                class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+            <label for="themeName" class="text-sm font-medium text-gray-700 mb-2">Theme Name</label>
+            <input name="themeName" type="text" id="themeName" placeholder="Enter theme name"
+                class="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out text-sm">
         </div>
 
-        <!-- Category Description -->
+        <!-- Theme Description -->
         <div class="form-group flex flex-col">
-            <label for="categoryDescription" class="text-sm text-gray-700 mb-1">Category Description</label>
-            <textarea name="categoryDescription" id="categoryDescription" rows="4" placeholder="Enter category description"
-                class="p-2 border border-gray-300 rounded-lg outline-none text-sm"></textarea>
+            <label for="themeDescription" class="text-sm font-medium text-gray-700 mb-2">Theme Description</label>
+            <textarea name="themeDescription" id="themeDescription" rows="4" placeholder="Enter theme description"
+                class="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out text-sm"></textarea>
         </div>
 
-        <button type="submit"
-            class="submit-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
-            name="addCategory">Add Category</button>
-        <button type="button" id="closeForm"
-            class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
+        <!-- Submit Button -->
+        <button type="submit" class="submit-btn bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out hover:bg-blue-700"
+            name="addTheme">Add Theme</button>
+        
+        <!-- Close Button -->
+        <button type="button" id="closeForm" class="close-btn bg-gray-500 text-white px-5 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-600">
+            Close
+        </button>
     </form>
-    </div>
+</div>
+
 
     <div id="editform"
         class="add-client-form fixed  right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
@@ -318,11 +325,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
         <script>
 
          function showCategoryDetails(id) {
-        fetch('view_category.php?id_category=' + id)
+        fetch('view_theme_details.php?idTheme=' + id)
             .then(response => response.text())
             .then(data => {
                 Swal.fire({
-                    title: 'Category Details',
+                    title: 'Theme Details',
                     html: data, 
                     icon: 'info',
                     showCloseButton: true,
@@ -330,11 +337,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
                 });
             })
             .catch(error => {
-                console.error('Error fetching Category details:', error);
+                console.error('Error fetching Theme details:', error);
             });
     }
 </script>
-        <script src=".././assets/main.js"></script>
+        <script src="../../assets/main.js"></script>
     </body>
 
     </html>

@@ -41,29 +41,63 @@ try {
 
 <body class="">
     <!-- Side Bar -->
-    <div class=" fixed top-0 left-0  w-[230px] h-[100%] z-50 overflow-hidden sidebar ">
-        <a href="" class="logo text-xl font-bold h-[56px] flex items-center text-[#1976D2] z-30 pb-[20px] box-content">
-            <i class=" mt-4 text-xxl max-w-[60px] flex justify-center "><i class="fa-solid fa-car-side"></i></i>
-            <div class="logoname ml-2"><span>Drive
-            </span>Loc</div>
-        </a>
-        <ul class="side-menu w-full mt-12">
-            <li class="active h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"> <i class="fa-solid fa-file-contract"></i>Statistic</a></li>
-            <li class=" h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php">
-            <i class="fa-solid fa-user-group"></i>Clients</a></li>
-            <li class="  h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listVehicle.php"><i
-            class="fa-solid fa-car"></i></i>Vehicles</a></li>
-            <li class=" h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listCategory.php"><i
-                        class="fa-solid fa-chart-simple"></i>Category</a></li>
-        </ul>
-        <ul class="side-menu w-full mt-12">
-            <li class="h-12 bg-transparent ml-2.5 rounded-l-full p-1">
-                <a href="../Visiteur/logout.php" class="logout">
-                    <i class='bx bx-log-out-circle'></i> Logout
-                </a>
-            </li>
-        </ul>
-    </div>
+    <div class="fixed top-0 left-0 w-[230px] h-[100%] z-50 overflow-hidden sidebar">
+    <a href="" class="logo text-xl font-bold h-[56px] flex items-center text-[#1976D2] z-30 pb-[20px] box-content">
+        <i class="mt-4 text-xxl max-w-[60px] flex justify-center">
+            <i class="fa-solid fa-car-side"></i>
+        </i>
+        <div class="logoname ml-2">
+            <span>Drive</span>Loc
+        </div>
+    </a>
+    
+    <ul class="side-menu w-full mt-12">
+        <li class="active h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="index.php"><i class="fa-solid fa-file-contract"></i>Statistic</a></li>
+        <li class="h-12 bg-transparent ml-2.5 rounded-l-full p-1"><a href="listClients.php"><i class="fa-solid fa-user-group"></i>Clients</a></li>
+        <li class="h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listVehicle.php"><i class="fa-solid fa-car"></i>Vehicles</a></li>
+        <li class="h-12 bg-transparent ml-1.5 rounded-l-full p-1"><a href="listCategory.php"><i class="fa-solid fa-chart-simple"></i>Category</a></li>
+        
+        <li class="h-12 bg-transparent ml-1.5 rounded-l-full p-1">
+            <a href="" class="blog-management">
+                <i class="fa-solid fa-cogs"></i> 
+                Blog Management📌
+            </a>
+        </li>
+        
+        <li class="h-12 ml-8 bg-transparent  rounded-l-full p-1">
+            <a href="../Blog/admin/listTheme.php" class="Themes-management">
+                <i class="fa-solid fa-palette"></i> Themes
+            </a>
+        </li>
+        
+        <li class="h-12 bg-transparent ml-8 rounded-l-full p-1">
+            <a href="../Blog/admin/listArticle.php" class="Articles-management">
+                <i class="fa-solid fa-newspaper"></i> Articles
+            </a>
+        </li>
+        
+        <li class="h-12 bg-transparent ml-8 rounded-l-full p-1">
+            <a href="../Blog/admin/listTags.php" class="Tags-management">
+                <i class="fa-solid fa-tags"></i> Tags
+            </a>
+        </li>
+        <li class="h-12 bg-transparent ml-8 rounded-l-full p-1">
+            <a href="../Blog/admin/listcomments.php" class="Comments-management">
+                <i class="fa-solid fa-comments"></i> Comments
+            </a>
+        </li>
+    </ul>
+
+    <ul class="side-menu w-full mt-20">
+        <li class="h-12 bg-transparent ml-2.5 rounded-l-full p-1">
+            <a href="../Visiteur/logout.php" class="logout">
+                <i class="bx bx-log-out-circle"></i> Logout
+            </a>
+        </li>
+    </ul>
+</div>
+
+
     <!-- end sidebar -->
     <!-- Content -->
     <div class="content ">

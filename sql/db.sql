@@ -99,3 +99,53 @@ END $$
 
 DELIMITER ;
 
+-- version II DB Drive Loc 
+
+CREATE TABLE themes (
+    idTheme INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description text
+);
+
+CREATE TABLE tags (
+    idTag INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE articles (
+    idArticle INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    imageArt text,
+    video text,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    theme_id INT,
+    auteur_id INT,
+    tags_id INT,
+    FOREIGN KEY (theme_id) REFERENCES themes(idTheme),
+    FOREIGN KEY (auteur_id) REFERENCES Users(id_user),
+    FOREIGN KEY (tags_id) REFERENCES tags(idTag)
+);
+
+CREATE TABLE article_tags (
+    article_id INT,
+    tag_id INT,
+    FOREIGN KEY (article_id) REFERENCES articles(idArticle),
+    FOREIGN KEY (tag_id) REFERENCES tags(idTag)
+);
+
+CREATE TABLE comments (
+    idComments INT AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    article_id INT,
+    user_id INT, 
+    FOREIGN KEY (article_id) REFERENCES articles(idArticle),
+    FOREIGN KEY (user_id) REFERENCES Users(id_user)
+);
+
+CREATE TABLE favorites (
+    user_id INT,
+    article_id INT,
+    PRIMARY KEY (user_id, article_id)
+);
