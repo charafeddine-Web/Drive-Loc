@@ -6,25 +6,27 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
     header("Location: ../index.html");
     exit;
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addTags'])) {
+    $tags = $_POST['tagname']; 
+    $successCount = 0; 
+    foreach ($tags as $tag) {
+        $trimmedTag = trim($tag); 
+        if (!empty($trimmedTag)) {
+            $category = new Tag(null, $trimmedTag);
+            $category->AddTag();
+            $successCount++;
+        }
+    }
+    
+    if ($successCount > 0) {
+        header('Location: listTags.php');
+        exit();
+    } else {
+        echo "No valid tags were added. Please enter at least one tag.";
+    }
+}
 
-// if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
-//     $categoryName = $_POST['categoryName'];
-//     $categoryDescription = $_POST['categoryDescription'];
-
-//     if (!empty($categoryName) && !empty($categoryDescription)) {
-//         try {
-//             $category = new Category(null,$categoryName, $categoryDescription);
-//             $category->AddCategory();  
-//             header('Location: listCategory.php');
-//             exit();  
-//         } catch (Exception $e) {
-//             echo 'Error adding category: ' . $e->getMessage();
-//         }
-//     } else {
-//         echo 'Please fill in both fields.';
-//     }
-// }
-// ?>
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,7 +38,7 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.tailwindcss.com"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../assets/style.css">
     <script src=".././assets/tailwind.js"></script>
 </head>
@@ -127,7 +129,6 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
             <img class="w-[36px] h-[36px] object-cover rounded-full" width="36" height="36" src="../../assets/image/charaf.png.jfif">
             </a>
         </nav>
-
         <!-- end nav -->
         <main class=" mainn w-full p-[36px_24px] max-h-[calc(100vh_-_56px)]">
             <div class="header flex items-center justify-between gap-[16px] flex-wrap">
@@ -187,7 +188,7 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                 <div class="orders  flex-grow flex-[1_0_500px]">
                     <div class="header  flex items-center gap-[16px] mb-[24px]">
                         <i class='bx bx-list-check'></i>
-                        <h3 class="mr-auto text-[24px] font-semibold">List Category</h3>
+                        <h3 class="mr-auto text-[24px] font-semibold">List Tags</h3>
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-search'></i>
                     </div>
@@ -212,9 +213,12 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                                         echo '<td class="border p-2">' . htmlspecialchars($r['idTag']) . '</td>';
                                         echo '<td class="border p-2">' . htmlspecialchars($r['name']) . '</td>';
                                         echo '<td class="border p-2 flex items-center justify-between">';
-                                        echo '<a  href="edit_tag.php?idTag=' . $r['idTag'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
                                         echo '<a href="delete_tag.php?idTag=' . $r['idTag'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this category?\')">Delete</a>';
-                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showCategoryDetails(' . $r['idTag'] . ')">View</a>';
+                                        echo '<a href="javascript:void(0);" 
+                                                    class="text-green-500 hover:text-green-700"
+                                                    onclick="showTagDetails(' . htmlspecialchars($r['idTag']) . ')">
+                                                    View
+                                                </a>';
                                         echo '</td>';
                                         echo "</tr>";
                                     }
@@ -235,32 +239,32 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
     </div>
 
     <div id="addClientForm"
-        class="add-client-form fixed rounded-xl right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
-        <form action="" method="post" class="flex flex-col gap-4">
-        <h2 class="text-2xl font-semibold mb-5">Add Tags</h2>
-        
-        <!-- Category Name -->
+    class="add-client-form fixed rounded-xl right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
+    <form action="" method="post" class="flex flex-col gap-4">
         <div class="form-group flex flex-col">
-            <label for="categoryName" class="text-sm text-gray-700 mb-1">Tag Name</label>
-            <input name="categoryName" type="text" id="categoryName" placeholder="Enter category name"
-                class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-semibold mb-5">Add Tags</h2>
+                <button type="button" id="closeForm"
+                    class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
+            </div>
+            <label for="tagname" class="text-sm text-gray-700 mb-1">Tag Name</label>
+            <div id="tagInputs" class="flex flex-col gap-2">
+                <input name="tagname[]" type="text" placeholder="Enter tag name"
+                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
+            </div>
+            <button type="button" id="addTagInput"
+                class="bg-blue-600 text-white border-none px-3 py-1 rounded-lg cursor-pointer transition-all duration-500 ease-in-out mt-2">
+                Add Another Tag
+            </button>
         </div>
-
-        <!-- Category Description -->
-        <div class="form-group flex flex-col">
-            <label for="categoryDescription" class="text-sm text-gray-700 mb-1">Category Description</label>
-            <textarea name="categoryDescription" id="categoryDescription" rows="4" placeholder="Enter category description"
-                class="p-2 border border-gray-300 rounded-lg outline-none text-sm"></textarea>
-        </div>
-
         <button type="submit"
-            class="submit-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
-            name="addCategory">Add Category</button>
-        <button type="button" id="closeForm"
-            class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
+            class="submit-btn bg-blue-600 text-white border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
+            name="addTags">Submit Tags</button>
     </form>
-    </div>
+</div>
 
+
+<!-- 
     <div id="editform"
         class="add-client-form fixed  right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
         <form action=".././controllers/controlCar.php?Numedit=<?php echo $val[0]['NumImmatriculation'] ?>" method="post"
@@ -308,9 +312,44 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                 <button type="button" id="colseedit"
                     class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
             </form>
-        </div>
+        </div> -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+    document.getElementById('addTagInput').addEventListener('click', function () {
+        const tagInputsContainer = document.getElementById('tagInputs');
+        const newInput = document.createElement('input');
+        newInput.setAttribute('name', 'tagname[]');
+        newInput.setAttribute('type', 'text');
+        newInput.setAttribute('placeholder', 'Enter tag name');
+        newInput.classList.add('p-2', 'border', 'border-gray-300', 'rounded-lg', 'outline-none', 'text-sm', 'mt-2');
+        tagInputsContainer.appendChild(newInput);
+    });
+</script>
+<script>
+        function showTagDetails(id) {
+            fetch('view_tag_details.php?idTag=' + id)
+                .then(response => response.text())
+                .then(data => {
+                    Swal.fire({
+                        title: 'Tag Details',
+                        html: data,
+                        icon: 'info',
+                        showCloseButton: true,
+                        confirmButtonText: 'Close'
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching Tag details:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Unable to fetch Tag details.',
+                        icon: 'error',
+                        confirmButtonText: 'Close'
+                    });
+                });
+        }
 
+</script>
         <script>
 
          function showCategoryDetails(id) {
@@ -330,7 +369,7 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
             });
     }
 </script>
-        <script src=".././assets/main.js"></script>
+        <script src="../../assets/main.js"></script>
     </body>
 
     </html>

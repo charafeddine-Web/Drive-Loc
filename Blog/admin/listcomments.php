@@ -1,5 +1,5 @@
 <?php
-// require_once '../autoload.php';
+require_once '../classes/Comment.php';
 session_start();
 
 if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['id_role'] !== 1)) {
@@ -7,24 +7,36 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
     exit;
 }
 
-// if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addCategory'])) {
-//     $categoryName = $_POST['categoryName'];
-//     $categoryDescription = $_POST['categoryDescription'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addComment'])) {
 
-//     if (!empty($categoryName) && !empty($categoryDescription)) {
-//         try {
-//             $category = new Category(null,$categoryName, $categoryDescription);
-//             $category->AddCategory();  
-//             header('Location: listCategory.php');
-//             exit();  
-//         } catch (Exception $e) {
-//             echo 'Error adding category: ' . $e->getMessage();
-//         }
-//     } else {
-//         echo 'Please fill in both fields.';
-//     }
-// }
-// ?>
+        
+
+    if (isset($_GET['article_id'])) {
+        $id_article = $_GET['article_id'];
+    } else {
+        $id_article = null; 
+    }
+    echo $id_article;
+
+    $commentContent = $_POST['commentContent'];
+    $user_id = $_SESSION['id_user'];
+    if (!empty($commentContent)) {
+        try {
+            $comment = new Comment(null, $commentContent, null, $id_article, $user_id); 
+            $comment->addComment();  
+            
+            header('Location: listcomments.php');
+            exit();  
+        } catch (Exception $e) {
+            echo 'Error adding comment: ' . $e->getMessage();
+        }
+    } else {
+        echo 'Please write a comment before submitting.';
+    }
+}
+?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,7 +48,7 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.tailwindcss.com"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../../assets/style.css">
     <script src=".././assets/tailwind.js"></script>
 </head>
@@ -131,23 +143,21 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
         <!-- end nav -->
         <main class=" mainn w-full p-[36px_24px] max-h-[calc(100vh_-_56px)]">
             <div class="header flex items-center justify-between gap-[16px] flex-wrap">
-                <div class="left">
+            <div class="left">
                 <ul class="breadcrumb flex items-center space-x-[16px]">
                         <li class="text-[#363949]"><a  href="listClients.php">
-                                index &npr;
+                                Themes &npr;
                             </a></li>
                         /
-                        <li class="text-[#363949]"><a href="listCars.php"  >Clients &npr;</a></li> /
-                        <li class="text-[#363949]"><a href="listContrat.php">Vehicles &npr;</a></li> /
-                        <li class="text-[#363949]"><a href="statistic.php" class="active">Categorys &npr;</a></li>
-
+                        <li class="text-[#363949]"><a href="listCars.php"  >Articles &npr;</a></li> /
+                        <li class="text-[#363949]"><a  href="listContrat.php">Tags &npr;</a></li> /
+                        <li class="text-[#363949]"><a href="statistic.php" class="active">Comments &npr;</a></li>
                     </ul>
-
                 </div>
                 <a id="buttonadd" href="#"
                     class="report h-[36px] px-[16px] rounded-[36px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-medium">
                     <i class="fa-solid fa-car"></i>
-                    <span>Add Category</span>
+                    <span>Add Comment</span>
                 </a>
             </div>
             <!-- insights-->
@@ -189,133 +199,101 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                 <div class="orders  flex-grow flex-[1_0_500px]">
                     <div class="header  flex items-center gap-[16px] mb-[24px]">
                         <i class='bx bx-list-check'></i>
-                        <h3 class="mr-auto text-[24px] font-semibold">List Category</h3>
+                        <h3 class="mr-auto text-[24px] font-semibold">List Comments</h3>
                         <i class='bx bx-filter'></i>
                         <i class='bx bx-search'></i>
                     </div>
                     <!--- tables---->
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="">
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Registration ID</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Name</th>
-                                <th class="pb-3 px-3 text-sm text-left border-b border-grey">Description </th>
-                                <th class="pb-3 px-5 text-sm text-left border-b border-grey">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                           
-                            try {
-                                $category = Category::ShowCategory();
-                    
-                                if ($category) {
-                                    foreach ($category as $ct) {
-                                        echo "<tr>";
-                                        echo '<td class="border p-2">' . htmlspecialchars($ct['id_category']) . '</td>';
-                                        echo '<td class="border p-2">' . htmlspecialchars($ct['name']) . '</td>';
-                                        echo '<td class="border p-2">' . htmlspecialchars($ct['description']) . '</td>';
-                                        echo '<td class="border p-2 flex items-center justify-between">';
-                                        echo '<a  href="edit_vehicle.php?id_category=' . $ct['id_category'] . '" class="buttonedit text-blue-500 hover:text-blue-700">Edit</a> | ';
-                                        echo '<a href="delete_category.php?id_category=' . $ct['id_category'] . '" class="text-red-500 hover:text-red-700" onclick="return confirm(\'Are you sure you want to delete this category?\')">Delete</a>';
-                                        echo '<a href="javascript:void(0);" class="text-green-500 hover:text-green-700" onclick="showCategoryDetails(' . $ct['id_category'] . ')">View</a>';
-                                        echo '</td>';
-                                        echo "</tr>";
-                                    }
-                                } else {
-                                    echo "<tr><td colspan='8' class='text-center p-2'>No Category available.</td></tr>";
-                                }
-                            } catch (PDOException $e) {
-                                echo "<tr><td colspan='8' class='text-center p-2 text-red-500'>Error: " . $e->getMessage() . "</td></tr>";
-                            }
-                            
-                        
-                            ?>
-                        </tbody>
-                    </table>
+                    <table class="w-full border-collapse shadow-lg rounded-lg overflow-hidden">
+    <thead class="bg-gray-100">
+        <tr>
+            <th class="pb-3 px-4 text-sm text-left text-gray-600 font-semibold border-b">Registration ID</th>
+            <th class="pb-3 px-4 text-sm text-left text-gray-600 font-semibold border-b">Content</th>
+            <th class="pb-3 px-4 text-sm text-left text-gray-600 font-semibold border-b">Article</th>
+            <th class="pb-3 px-4 text-sm text-left text-gray-600 font-semibold border-b">Author</th>
+            <th class="pb-3 px-4 text-sm text-left text-gray-600 font-semibold border-b">Date Created</th>
+            <th class="pb-3 px-4 text-sm text-left text-gray-600 font-semibold border-b">Actions</th>
+        </tr>
+    </thead>
+    <tbody class="bg-white">
+        <?php
+        try {
+            $Comment = Comment::getAllComments();
+            if ($Comment) {
+                foreach ($Comment as $cm) {
+                    echo "<tr class='hover:bg-gray-50 transition-all duration-200'>";
+                    echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($cm['idComments']) . '</td>';
+                    echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($cm['content']) . '</td>';
+                    echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($cm['article_title']) . '</td>';
+                    echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($cm['user_name']) . '</td>';
+                    echo '<td class="border p-4 text-sm text-gray-700">' . htmlspecialchars($cm['created_at']) . '</td>';
+                    echo '<td class="border p-4 text-sm text-gray-700 flex items-center space-x-3">';
+                    echo '<a href="delete_Comment.php?id_Comment=' . $cm['idComments'] . '" class="text-red-600 hover:text-red-800" onclick="return confirm(\'Are you sure you want to delete this comment?\')">Delete</a>';
+                    echo '<a href="javascript:void(0);" class="text-green-600 hover:text-green-800" onclick="showCommentDetails(' . $cm['idComments'] . ')">View</a>';
+                    echo '</td>';
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='6' class='text-center p-4 text-gray-500'>No Comments available.</td></tr>";
+            }
+        } catch (PDOException $e) {
+            echo "<tr><td colspan='6' class='text-center p-4 text-red-500'>Error: " . $e->getMessage() . "</td></tr>";
+        }
+        ?>
+    </tbody>
+</table>
+
                 </div>
             </div>
         </main>
     </div>
-
     <div id="addClientForm"
-        class="add-client-form fixed rounded-xl right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
-        <form action="" method="post" class="flex flex-col gap-4">
-        <h2 class="text-2xl font-semibold mb-5">Add Category</h2>
-        
-        <!-- Category Name -->
-        <div class="form-group flex flex-col">
-            <label for="categoryName" class="text-sm text-gray-700 mb-1">Category Name</label>
-            <input name="categoryName" type="text" id="categoryName" placeholder="Enter category name"
-                class="p-2 border border-gray-300 rounded-lg outline-none text-sm">
-        </div>
+    class="add-client-form fixed rounded-xl right-[-100%] w-full max-w-[400px] h-auto shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px] bg-white">
+    <form action="" method="post" class="flex flex-col gap-4">
+    <input type="hidden" id="article_id" name="article_id" value="<?php echo $id_article; ?>">
 
-        <!-- Category Description -->
+        <h2 class="text-2xl font-semibold mb-5 text-center">Add Comment</h2>
         <div class="form-group flex flex-col">
-            <label for="categoryDescription" class="text-sm text-gray-700 mb-1">Category Description</label>
-            <textarea name="categoryDescription" id="categoryDescription" rows="4" placeholder="Enter category description"
-                class="p-2 border border-gray-300 rounded-lg outline-none text-sm"></textarea>
+            <label for="commentContent" class="text-sm text-gray-700 mb-1">Your Comment</label>
+            <textarea name="commentContent" id="commentContent" rows="4" placeholder="Write your comment here..."
+            class="p-3 border-2 border-gray-300 rounded-lg outline-none text-sm bg-transparent hover:border-blue-400 focus:border-blue-500 transition-all"></textarea>
         </div>
-
+        <div class="form-group flex flex-wrap gap-2 mt-4">
+            <button type="button" class="sticker-btn p-2 rounded-lg border bg-gray-100 hover:bg-blue-100 transition-all">
+                <i class="fa-solid fa-smile text-xl text-yellow-500"></i> 😄
+            </button>
+            <button type="button" class="sticker-btn p-2 rounded-lg border bg-gray-100 hover:bg-blue-100 transition-all">
+                <i class="fa-solid fa-heart text-xl text-red-500"></i> ❤️
+            </button>
+            <button type="button" class="sticker-btn p-2 rounded-lg border bg-gray-100 hover:bg-blue-100 transition-all">
+                <i class="fa-solid fa-thumbs-up text-xl text-blue-500"></i> 👍
+            </button>
+            <button type="button" class="sticker-btn p-2 rounded-lg border bg-gray-100 hover:bg-blue-100 transition-all">
+                <i class="fa-solid fa-sparkles text-xl text-purple-500"></i> ✨
+            </button>
+        </div>
         <button type="submit"
-            class="submit-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
-            name="addCategory">Add Category</button>
+            class="submit-btn bg-blue-600 text-white border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out mt-4"
+            name="addComment">Add Comment</button>
         <button type="button" id="closeForm"
-            class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
+            class="close-btn bg-gray-400 text-white border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out mt-2">
+            Close
+        </button>
     </form>
-    </div>
+</div>
 
-    <div id="editform"
-        class="add-client-form fixed  right-[-100%] w-full max-w-[400px] h-[580px] shadow-[2px_0_10px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-5 transition-all duration-700 ease-in-out z-50 top-[166px]">
-        <form action=".././controllers/controlCar.php?Numedit=<?php echo $val[0]['NumImmatriculation'] ?>" method="post"
-            class="flex flex-col gap-4">
-            <h2 class="text-2xl font-semibold  mb-5">Update Car</h2>
-            <div class="form-group flex flex-col">
-                <label for="nummatrucle" class="text-sm text-gray-700  mb-1">New Registration number</label>
-                <input name="NumMatricle" type="text" id="nummatrucle" placeholder="Enter the vehicle Sirie"
-                    class="p-2 border border-gray-300 rounded-lg outline-none text-sm"
-                    value="<?php if (isset($val[0]['NumImmatriculation']))
-                        echo $val[0]['NumImmatriculation'] ?>">
-                </div>
-                <div class="form-group flex flex-col">
-                    <label for="marque" class="text-sm text-gray-700 mb-1">New Mark</label>
-                    <input name="Mark" type="text" id="marque" placeholder="Enter the vehicle Mark"
-                        class="p-2 border border-gray-300 rounded-lg outline-none text-sm"
-                        value="<?php if (isset($val[0]['Marque']))
-                        echo $val[0]['Marque'] ?>">
-                </div>
-                <div class="form-group flex flex-col">
-                    <label for="Model" class="text-sm text-gray-700 mb-1">New Model</label>
-                    <input name="Model" type="text" id="Model" placeholder="Enter the vehicle Model"
-                        class="p-2 border border-gray-300 rounded-lg outline-none text-sm"
-                        value="<?php if (isset($val[0]['Modele']))
-                        echo $val[0]['Modele'] ?>">
-                </div>
-                <div class="form-group flex flex-col">
-                    <label for="year" class="text-sm text-gray-700 mb-1">New Year</label>
-                    <input type="number" id="vehicleYear" name="vehYear" min="2008" max="2024" required
-                        placeholder="Enter the vehicle year"
-                        class="p-2 border border-gray-300 rounded-lg outline-none text-sm"
-                        value="<?php if (isset($val[0]['Annee']))
-                        echo $val[0]['Annee'] ?>">
-                </div>
-                <div class="form-group flex flex-col">
-                    <label for="carImage" class="text-sm text-gray-700 mb-1">Car Image</label>
-                    <input type="text" name="carImage" id="carImage" accept="image/*"
-                        class="p-2 border border-gray-300 rounded-lg outline-none text-sm"
-                        value="<?php if (isset($val[0]['Image']))
-                        echo $val[0]['Image'] ?>">
-                </div>
-                <button type="submit"
-                    class="submit-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out"
-                    name="editveh">Edit</button>
-                <button type="button" id="colseedit"
-                    class="close-btn border-none px-4 py-2 rounded-lg cursor-pointer transition-all duration-500 ease-in-out">Close</button>
-            </form>
-        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
         <script>
+            // pour add les imoje to input
+            document.querySelectorAll('.sticker-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const emoji = e.target.textContent.trim(); 
+                    const commentField = document.getElementById('commentContent');
+                    commentField.value += emoji; 
+                    commentField.focus(); 
+                });
+            });
 
          function showCategoryDetails(id) {
         fetch('view_category.php?id_category=' + id)
@@ -334,7 +312,7 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
             });
     }
 </script>
-        <script src=".././assets/main.js"></script>
+        <script src="../../assets/main.js"></script>
     </body>
 
     </html>

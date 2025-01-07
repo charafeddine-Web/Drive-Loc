@@ -131,18 +131,16 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
         <!-- end nav -->
         <main class=" mainn w-full p-[36px_24px] max-h-[calc(100vh_-_56px)]">
             <div class="header flex items-center justify-between gap-[16px] flex-wrap">
-                <div class="left">
+            <div class="left">
                 <ul class="breadcrumb flex items-center space-x-[16px]">
                         <li class="text-[#363949]"><a  href="listClients.php">
-                                index &npr;
+                                Themes &npr;
                             </a></li>
                         /
-                        <li class="text-[#363949]"><a href="listCars.php"  >Clients &npr;</a></li> /
-                        <li class="text-[#363949]"><a href="listContrat.php">Vehicles &npr;</a></li> /
-                        <li class="text-[#363949]"><a href="statistic.php" class="active">Categorys &npr;</a></li>
-
+                        <li class="text-[#363949]"><a href="listCars.php"  class="active">Articles &npr;</a></li> /
+                        <li class="text-[#363949]"><a  href="listContrat.php">Tags &npr;</a></li> /
+                        <li class="text-[#363949]"><a href="statistic.php" >Comments &npr;</a></li>
                     </ul>
-
                 </div>
                 <a id="buttonaddd" href="#"
                     class="buttonaddd report h-[36px] px-[16px] rounded-[36px] bg-[#1976D2] text-[#f6f6f6] flex items-center justify-center gap-[10px] font-medium">

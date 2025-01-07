@@ -11,7 +11,7 @@ class Tag {
         $this->name = $name;
     }
 
-    public function AddTag() {
+    public function AddTag( ) {
         $pdo = DatabaseConnection::getInstance()->getConnection();
         try {
             $sql = "INSERT INTO tags (name) VALUES (:name)";

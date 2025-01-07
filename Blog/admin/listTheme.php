@@ -319,7 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addTheme'])) {
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
-                function showCategoryDetails(id) {
+        function showCategoryDetails(id) {
             fetch('view_theme_details.php?idTheme=' + id)
                 .then(response => response.text())
                 .then(data => {
