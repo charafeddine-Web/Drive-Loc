@@ -3,7 +3,7 @@ require_once '../classes/Comment.php';
 session_start();
 
 if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['id_role'] !== 1)) {
-    header("Location: ../index.html");
+    header("Location: ../../index.html");
     exit;
 }
 

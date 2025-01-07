@@ -11,7 +11,7 @@ class Article {
     private ?int $themeId;
     private ?int $auteurId;
     private ?int $tagsId;
-
+    private ?string $status;
     public function __construct(
         ?int $idArticle = null,
         ?string $title = null,
@@ -21,7 +21,8 @@ class Article {
         ?string $createdAt = null,
         ?int $themeId = null,
         ?int $auteurId = null,
-        ?int $tagsId = null
+        ?int $tagsId = null,
+        ?string $status 
     ) {
         $this->idArticle = $idArticle;
         $this->title = $title;
@@ -32,6 +33,7 @@ class Article {
         $this->themeId = $themeId;
         $this->auteurId = $auteurId;
         $this->tagsId = $tagsId;
+        $this->status = $status;
     }
 
 
@@ -44,6 +46,7 @@ class Article {
                 articles.title,
                 articles.content,
                 articles.imageArt,
+                articles.status,
                 articles.video,
                 articles.created_at,
                 themes.name AS theme_name,
@@ -62,11 +65,28 @@ class Article {
         }
     }
 
+    public function ShowArticles_Client(){
+        $pdo = DatabaseConnection::getInstance()->getConnection();
+        try{
+            $sql = "SELECT * FROM articles where auteur_id=?";
+            $stmt=$pdo->prepare($sql);
+            $stmt->bindParam(1, $this->auteurId, PDO::PARAM_INT);
+            $stmt->execute();
+            return  $stmt->fetchAll(\PDO::FETCH_ASSOC) ;
+        }catch (\Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
     // Getters and Setters
     public function getIdArticle(): int {
         return $this->idArticle;
     }
-
+    public function getStatus(): string {
+        return $this->status;
+    }
+    public function setStatus(string $status): void {
+        $this->status = $status;
+    }
     public function getTitle(): string {
         return $this->title;
     }

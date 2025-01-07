@@ -3,7 +3,7 @@ require_once '../classes/Article.php';
 session_start();
 
 if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['id_role'] !== 1)) {
-    header("Location: ../index.html");
+    header("Location: ../../index.html");
     exit;
 }
 
@@ -226,6 +226,7 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                                 <th class="pb-3 px-5 text-sm text-left border-b border-grey">Tag</th>
                                 <th class="pb-3 px-5 text-sm text-left border-b border-grey">Date</th>
                                 <th class="pb-3 px-5 text-sm text-left border-b border-grey">Image</th>
+                                <th class="pb-3 px-5 text-sm text-left border-b border-grey">Status</th>
                                 <th class="pb-3 px-5 text-sm text-left border-b border-grey">Action</th>
                             </tr>
                         </thead>
@@ -238,6 +239,20 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                     
                                 if ($rs) {
                                     foreach ($rs as $r) {
+                                        $status = htmlspecialchars($r['status']);
+                                            $statusClass = 'text-white';
+
+                                            switch ($status) {
+                                                case 'pending':
+                                                    $statusClass = 'text-yellow-500';
+                                                    break;
+                                                case 'accepted':
+                                                    $statusClass = 'text-green-500';
+                                                    break;
+                                                case 'rejected':
+                                                    $statusClass = 'text-red-500';
+                                                    break;
+                                            }
                                         echo "<tr>";
                                         echo '<td class="border p-2">' . htmlspecialchars($r['idArticle']) . '</td>';
                                         echo '<td class="border p-2">' . htmlspecialchars($r['title']) . '</td>';
@@ -246,7 +261,8 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                                         echo '<td class="border p-2">' . htmlspecialchars($r['author_name']) . '</td>';
                                         echo '<td class="border p-2">' . htmlspecialchars($r['tag_name']) . '</td>';
                                         echo '<td class="border p-2">' . htmlspecialchars($r['created_at']) . '</td>';
-                                        echo '<td class="border p-2">' . htmlspecialchars($r['imageArt']) . '</td>';
+                                        echo '<td class="border p-2">' . htmlspecialchars(string: $r['imageArt']) . '</td>';
+                                        echo '<td class="border p-4 text-center text-sm ' . $statusClass . ' rounded-lg font-semibold">' . $status . '</td>';
                                         echo '<td class="border p-4 text-center">';
                                         echo '<a href="accepter_Art.php?idArticle=' . $r['idArticle'] . '" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-300 mx-2">Accepter</a>';
                                         echo '<a href="refuser_Art.php?idArticle=' . $r['idArticle'] . '" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 mx-2">Refuser</a>';

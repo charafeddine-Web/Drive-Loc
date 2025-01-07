@@ -122,6 +122,7 @@ CREATE TABLE articles (
     theme_id INT,
     auteur_id INT,
     tags_id INT,
+    status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
     FOREIGN KEY (theme_id) REFERENCES themes(idTheme),
     FOREIGN KEY (auteur_id) REFERENCES Users(id_user),
     FOREIGN KEY (tags_id) REFERENCES tags(idTag)

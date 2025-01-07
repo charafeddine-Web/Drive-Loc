@@ -1,26 +1,26 @@
 <?php
-require_once '../autoload.php';
+require_once '../../autoload.php';
 
-use Classes\Category;
-use Classes\Reservation;
-use Classes\Vehicle;
+// use Classes\Category;
+// use Classes\Reservation;
+// use Classes\Vehicle;
 
 session_start();
 if ((!isset($_SESSION['id_user']) && $_SESSION['id_role'] !== 2)) {
-    header("Location: ../Visiteur/login.php");
+    header("Location: ../../Visiteur/login.php");
     exit;
 }
-try {
-    $categories = Category::ShowCategory();
-    $categoryVehicles = [];
-    foreach ($categories as $category) {
-        $vehicles = Vehicle::getVehiclesByCategory($category['id_category']);
-        $categoryVehicles[$category['id_category']] = $vehicles;
-    }
-} catch (\PDOException $e) {
-    echo "Error fetching categories and vehicles: " . $e->getMessage();
-    return false;
-}
+// try {
+//     $categories = Category::ShowCategory();
+//     $categoryVehicles = [];
+//     foreach ($categories as $category) {
+//         $vehicles = Vehicle::getVehiclesByCategory($category['id_category']);
+//         $categoryVehicles[$category['id_category']] = $vehicles;
+//     }
+// } catch (\PDOException $e) {
+//     echo "Error fetching categories and vehicles: " . $e->getMessage();
+//     return false;
+// }
 
 ?>
 
@@ -150,28 +150,27 @@ try {
                 <!-- Navigation Links Section -->
                 <div class="hidden lg:flex items-center space-x-12">
                     <div class="flex space-x-8">
-                        <button id="showCars"
-                            class="nav-link active text-lg font-semibold hover:text-blue-800 transition-colors flex items-center">
+                        <a href="../../client/index.php" id="showCars"
+                            class="nav-link  text-lg font-semibold hover:text-blue-800 transition-colors flex items-center">
                             <i class="fa-solid fa-car-rear mr-2"></i>  Cars
-                        </button>
-                        <button id="showReservations"
+                        </a>
+                        <a  href="../../client/index.php" id="showReservations"
                             class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors flex items-center">
-                            <i class="fa-solid fa-clock-rotate-left mr-2"></i> Reservations
-                        </button>
-                        <a href="../Blog/client/index.php" id="showBlog"
+                            <i class="fa-solid fa-clock-rotate-left mr-2"></i>  Reservations
+                        </a>
+                        <a href="./index.php" id="showBlog"
                             class="nav-link text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
                             <i class="fa-solid fa-book-open mr-2"></i> 
                             Blogs
                         </a>
-                        <a href="../Blog/client/comments.php" id="showBlogMobile"
-                            class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
+                        <a href="./comments.php" id="showBlogMobile"
+                            class="nav-link text-lg active font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
                             <i class="fa-solid fa-comments mr-2"></i> Mes Comment
                         </a>
-                        
                     </div>
 
                     <div class="flex items-center space-x-6">
-                        <form action="../Visiteur/logout.php" method="POST">
+                        <form action="../../Visiteur/logout.php" method="POST">
                             <button type="submit" name="submit"
                                 class="bg-black hover:bg-gray-800 text-white px-6 py-2.5 rounded-full transition-colors duration-300 flex items-center space-x-2">
                                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -189,144 +188,34 @@ try {
                 <button id="closeMenuu" class="text-3xl text-gray-800 absolute top-0 right-4 pb-8">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-                <button id="showCarsMobile"
-                    class="nav-link active text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
-                    <i class="fa-solid fa-car-rear mr-2"></i> Available Cars
-                </button>
-                <button id="showReservationsMobile"
+                <a href="../../client/index.php" id="showCarsMobile"
+                    class="nav-link  text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
+                    <i class="fa-solid fa-car-rear mr-2"></i>  Cars
+                </a>
+                <a  href="../../client/index.php" id="showReservationsMobile"
                     class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
-                    <i class="fa-solid fa-clock-rotate-left mr-2"></i> My Reservations
-                </button>
-                <a href="../Blog/client/index.php" id="showBlog"
-                            class="nav-link text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
-                            <i class="fa-solid fa-book-open mr-2"></i> 
-                            Blogs
+                    <i class="fa-solid fa-clock-rotate-left mr-2"></i>  Reservations
                 </a>
-                <a href="../Blog/client/comments.php" id="showBlogMobile"
-                            class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
-                            <i class="fa-solid fa-comments mr-2"></i> 
-                            Mes Comment
+                <a href="./index.php" id="showBlogMobile"
+                    class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
+                    <i class="fa-solid fa-book-open mr-2"></i> Blogs
                 </a>
-                <form action="../Visiteur/logout.php" method="post">
+                <a href="./comments.php" id="showBlogMobile"
+                            class="nav-link text-lg active font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
+                            <i class="fa-solid fa-comments mr-2"></i> Mes Comments
+                </a>
+                <form action="../../Visiteur/logout.php" method="post">
                     <button type="submit"
                         class="bg-black hover:bg-gray-800 text-white py-2.5 px-6 rounded-full transition-colors duration-300 mt-4 w-full text-center">
                         <i class="fa-solid fa-right-from-bracket"></i> Logout
                     </button>
                 </form>
+               
             </div>
         </div>
     </nav>
-    <div id="carsPage" class="page active max-w-7xl mx-auto p-6 bg-gray-50" style="transform: translateY(100px);">
-        <!-- Title and No Cars Message -->
-        <div class="flex flex-col items-center justify-center p-8 text-center">
-            <div class="animate-bounce">
-                <i data-feather="car" class="w-16 h-16 text-red-500"></i>
-            </div>
-            <?php if (empty($categoryVehicles)): ?>
-                <h2 class="mt-4 text-3xl font-bold text-gray-800">
-                    No Cars Available
-                </h2>
-                <p class="mt-2 text-lg text-gray-600">
-                    There are currently no cars in the inventory.
-                    Please check back later.
-                </p>
-            <?php endif; ?>
-        </div>
-
-
-        <div class="w-full md:w-full h-auto bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Search and Filter</h3>
-            <div class="space-y-6">
-                <div>
-                    <input type="text" id="searchInput"
-                        class="w-full p-4 rounded-md border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Search by model...">
-                </div>
-                <div class="flex flex-col gap-4">
-                    <div class="filters">
-                        <select id="categoryFilter" class="w-full p-4 rounded-md border border-gray-300 text-gray-700">
-                            <option value="">All Categories</option>
-                            <?php foreach ($categories as $category): ?>
-                                <option value="<?php echo htmlspecialchars($category['id_category']); ?>">
-                                    <?php echo htmlspecialchars($category['name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div id="vehicleList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
-            </div>
-        </div>
-
-        <script>
-            document.getElementById('searchInput').addEventListener('input', updateVehicles);
-            document.getElementById('categoryFilter').addEventListener('change', updateVehicles);
-
-            function updateVehicles() {
-                const searchQuery = document.getElementById('searchInput').value;
-                const category = document.getElementById('categoryFilter').value;
-
-                fetch('filterVehicles.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ search: searchQuery, category: category }),
-                })
-                    .then(response => response.text())
-                    .then(rawData => {
-                        console.log('Raw Response:', rawData);
-                        try {
-                            const data = JSON.parse(rawData);
-                            const vehicleList = document.getElementById('vehicleList');
-                            vehicleList.innerHTML = '';
-                            if (data.length > 0) {
-                                data.forEach(vehicle => {
-                                    const vehicleCard = `
-                                    <div class="bg-white p-4 rounded-lg shadow-lg vehicle-card cursor-pointer" data-id="${vehicle.id_vehicle}" data-model="${vehicle.model}" data-transmission="${vehicle.transmissionType}" data-fuel="${vehicle.fuelType}" data-price="${vehicle.price_per_day}" data-image="${vehicle.imageVeh}">
-                                        <img src="../assets/image/${vehicle.imageVeh}" alt="${vehicle.model}" class="w-full h-48 object-cover rounded-t-lg mb-4">
-                                        <h4 class="text-xl font-semibold text-gray-800">${vehicle.model}</h4>
-                                        <p class="text-sm text-gray-500">Transmission: ${vehicle.transmissionType}</p>
-                                        <p class="text-sm text-gray-500">Mileage: ${vehicle.mileage} km</p>
-                                        <p class="text-sm text-gray-500">Fuel: ${vehicle.fuelType}</p>
-                                        <p class="text-sm text-blue-600 font-bold">$${vehicle.price_per_day}/day</p>
-                                    
-                                        
-                                    </div>`;
-                                    vehicleList.insertAdjacentHTML('beforeend', vehicleCard);
-                                });
-
-                                document.querySelectorAll('.vehicle-card').forEach(card => {
-                                    card.addEventListener('click', () => {
-                                        const modal = document.getElementById('reservationModal');
-                                        document.getElementById('modalModel').textContent = card.dataset.model;
-                                        document.getElementById('modalTransmission').textContent = `Transmission: ${card.dataset.transmission}`;
-                                        document.getElementById('modalFuel').textContent = `Fuel: ${card.dataset.fuel}`;
-                                        document.getElementById('modalPrice').textContent = `$${card.dataset.price}/day`;
-                                        document.getElementById('vehicle_id').value = card.dataset.id;
-
-                                        modal.classList.remove('hidden');
-                                    });
-                                });
-
-                                document.getElementById('closeModal').addEventListener('click', () => {
-                                    document.getElementById('reservationModal').classList.add('hidden');
-                                });
-                            } else {
-                                vehicleList.innerHTML = '<p class="text-gray-600">No vehicles found.</p>';
-                            }
-
-                        } catch (e) {
-                            console.error('JSON Parsing Error:', e);
-                        }
-                    })
-                    .catch(error => console.error('Fetch Error:', error));
-
-            }
-            updateVehicles();
-        </script>
-
+    <div id="ArticlePage" class="page active max-w-7xl mx-auto p-6 bg-gray-50" style="transform: translateY(100px);">
+        
        
     </div>
 
@@ -381,13 +270,13 @@ try {
     <div id="reservationsPage" class="page max-w-7xl mx-auto p-6 bg-gray-50">
         <h2 class="text-3xl font-bold mb-8 text-gray-800">My Reservations</h2>
 
-        <?php
+        <!-- <?php
         $client_res = new Reservation(null, null, null, null, null, null, null, null);
         if (isset($_SESSION['id_user'])) {
             $id = $_SESSION['id_user'];
         }
         $rs = $client_res->ShowAllRes_client($id);
-        ?>
+        ?> -->
 
         <?php if ($rs): ?>
             <?php foreach ($rs as $r):
@@ -666,15 +555,15 @@ try {
         });
 
         //pour reserponsive 
-        const hamburger = document.getElementById("hamburgerr");
+        const hamburgerr = document.getElementById("hamburgerr");
         const mobileMenu = document.getElementById("mobileMenu");
-        const closeMenu = document.getElementById("closeMenuu");
+        const closeMenuu = document.getElementById("closeMenuu");
 
-        hamburger.addEventListener("click", () => {
+        hamburgerr.addEventListener("click", () => {
             mobileMenu.classList.toggle("hidden");
         });
 
-        closeMenu.addEventListener("click", () => {
+        closeMenuu.addEventListener("click", () => {
             mobileMenu.classList.toggle("hidden");
         });
         document.addEventListener('DOMContentLoaded', function () {
