@@ -210,17 +210,14 @@ $themes = $theme->ShowThemes();
                             class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors flex items-center">
                             <i class="fa-solid fa-clock-rotate-left mr-2"></i> Reservations
                         </a>
-                        <a href="./blogs.php" id="showBlog"
-                            class="nav-link  text-lg active font-semibold hover:text-blue-800 transition-colors flex items-center">
-                            <i class="fa-solid fa-book-open mr-2"></i>All Blogs
-                        </a>
+                       
                         <a href="./index.php" id="showBlog"
-                            class="nav-link  text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
+                            class="nav-link active text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
                             <i class="fa-solid fa-book-open mr-2"></i>Blogs
                         </a>
-                        <a href="./index.php" id="showBlog"
+                        <a href="./favoris.php" id="showBlog"
                             class="nav-link  text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
-                            <i class="fa-solid fa-book-open mr-2"></i>Favoraite
+                            <i class="fa-solid fa-book-open mr-2"></i>favoris
                         </a>
                         <a href="./comments.php" id="showBlogMobile"
                             class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
@@ -258,6 +255,10 @@ $themes = $theme->ShowThemes();
                 <a href="./index.php" id="showBlogMobile"
                     class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
                     <i class="fa-solid fa-book-open mr-2"></i> Blogs
+                </a>
+                <a href="./favoris.php" id="showBlogMobile"
+                    class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
+                    <i class="fa-solid fa-book-open mr-2"></i> favoris
                 </a>
                 <a href="./index.php" id="showBlogMobile"
                     class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
@@ -414,7 +415,7 @@ $themes = $theme->ShowThemes();
         $hasAcceptedArticles = false;
         foreach ($rs as $r): 
             if ($r['status'] == "accepted"): 
-                $hasAcceptedArticles = true; // Mark that we have at least one accepted article
+                $hasAcceptedArticles = true; 
                 $status = htmlspecialchars($r['status']);
                 $statusClass = 'text-gray-500';
                 switch ($status) {
@@ -479,9 +480,14 @@ $themes = $theme->ShowThemes();
                     <button onclick="toggleCommentInput(<?php echo $r['idArticle']; ?>)" class="btncomment flex items-center hover:text-blue-600">
                         <i class="fa-solid fa-comment mr-2"></i> Comment
                     </button>
-                    <button class="flex items-center hover:text-blue-600">
-                        <i class="fa-solid fa-share mr-2"></i> Share
-                    </button>
+                    <form action="Add_favoris.php" method="post">
+                        <input type="hidden" name="id_article" value="<?php echo $r['idArticle']; ?>">
+                        <input type="hidden" name="user_id" value="<?php echo $_SESSION['id_user']; ?>">
+                        <button type="submit" name="submitcommentfavoris"  class="flex items-center hover:text-blue-600">
+                            <i class="fa-solid fa-share mr-2"></i> Favoris
+                        </button>
+                    </form>
+                   
                 </div>
             </div>
         <?php 

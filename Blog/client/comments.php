@@ -163,6 +163,10 @@ if ((!isset($_SESSION['id_user']) && $_SESSION['id_role'] !== 2)) {
                             <i class="fa-solid fa-book-open mr-2"></i> 
                             Blogs
                         </a>
+                        <a href="./favoris.php" id="showBlog"
+                            class="nav-link  text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
+                            <i class="fa-solid fa-book-open mr-2"></i>favoris
+                        </a>
                         <a href="./comments.php" id="showBlogMobile"
                             class="nav-link text-lg active font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
                             <i class="fa-solid fa-comments mr-2"></i> Mes Comment
@@ -199,6 +203,10 @@ if ((!isset($_SESSION['id_user']) && $_SESSION['id_role'] !== 2)) {
                 <a href="./index.php" id="showBlogMobile"
                     class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
                     <i class="fa-solid fa-book-open mr-2"></i> Blogs
+                </a>
+                <a href="./favoris.php" id="showBlogMobile"
+                    class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
+                    <i class="fa-solid fa-book-open mr-2"></i> favoris
                 </a>
                 <a href="./comments.php" id="showBlogMobile"
                             class="nav-link text-lg active font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">

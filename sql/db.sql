@@ -149,4 +149,6 @@ CREATE TABLE favorites (
     user_id INT,
     article_id INT,
     PRIMARY KEY (user_id, article_id)
+    FOREIGN KEY (article_id) REFERENCES articles(idArticle),
+    FOREIGN KEY (user_id) REFERENCES Users(id_user)
 );
