@@ -6,8 +6,6 @@ if ((!isset($_SESSION['id_user']) && $_SESSION['id_role'] !== 2)) {
     header("Location: ../../Visiteur/login.php");
     exit;
 }
-
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitarticle'])) {
     $title = $_POST['title'];
     $content = $_POST['content'];
@@ -212,14 +210,21 @@ $themes = $theme->ShowThemes();
                             class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors flex items-center">
                             <i class="fa-solid fa-clock-rotate-left mr-2"></i> Reservations
                         </a>
+                        <a href="./blogs.php" id="showBlog"
+                            class="nav-link  text-lg active font-semibold hover:text-blue-800 transition-colors flex items-center">
+                            <i class="fa-solid fa-book-open mr-2"></i>All Blogs
+                        </a>
                         <a href="./index.php" id="showBlog"
-                            class="nav-link text-lg active font-semibold hover:text-blue-800 transition-colors flex items-center">
-                            <i class="fa-solid fa-book-open mr-2"></i>
-                            Blogs
+                            class="nav-link  text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
+                            <i class="fa-solid fa-book-open mr-2"></i>Blogs
+                        </a>
+                        <a href="./index.php" id="showBlog"
+                            class="nav-link  text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
+                            <i class="fa-solid fa-book-open mr-2"></i>Favoraite
                         </a>
                         <a href="./comments.php" id="showBlogMobile"
                             class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
-                            <i class="fa-solid fa-comments mr-2"></i> Mes Comment
+                            <i class="fa-solid fa-comments mr-2"></i> Comment
                         </a>
                     </div>
 
@@ -268,8 +273,6 @@ $themes = $theme->ShowThemes();
             </div>
         </div>
     </nav>
-
-
 
     <div id="addArticleModal"
     class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
@@ -339,17 +342,64 @@ $themes = $theme->ShowThemes();
     </div>
 </div>
 
+       <div id="ArticlesPage" class="max-full fixed mx-auto p-6 bg-gray-900" style="left:0px;right:0px">
+            <div class="flex flex-col md:flex-row items-center justify-between mt-14">
+                <h3 class="text-3xl font-bold text-gray-50">My Articles</h3>
+                <div class="mt-6 flex flex-col md:flex-row justify-between gap-8">
+                    <div class="flex items-center space-x-4">
+                        <label for="themeFilter" class="text-gray-50">Filter by Theme:</label>
+                        <select id="theme_id" name="theme_id" required
+                            class="w-full mt-1 p-3 rounded-md border border-gray-300 focus:ring-blue-400 focus:border-blue-400">
+                            <option value="">Select Theme</option>
+                            <?php foreach ($themes as $theme): ?>
+                                <option value="<?php echo htmlspecialchars($theme['idTheme']); ?>">
+                                    <?php echo htmlspecialchars($theme['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <label for="tagSearch" class="text-gray-50">Search by Tags:</label>
+                        <input type="text" id="tagSearch" name="tags" class="p-2 border border-gray-300 rounded-lg" placeholder="Search by tags...">
+                    </div>
+                    
 
-    <!-- model pour show les blogs -->
-    <div id="ArticlesPage" class="max-full fixed  mx-auto p-6 bg-gray-300" style="left:0px;right:0px">
-        <div class="flex items-center justify-between  mt-20">
-            <h3 class="text-3xl font-bold  text-gray-800 ">My Articles</h3>
-            <button id="addarticle" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition">
-                Add Article
-            </button>
+                <button id="addarticle" class="bg-blue-600 ml-20 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition">
+                    Add Article
+                </button>
+            </div>
         </div>
-    </div>
+        </div>
+     
+        <div id="filteredResults" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4">
+    <!-- Results will be dynamically loaded here -->
+</div>
+<script>
+    // Function to apply the filter
+    async function applyFilter() {
+        const themeId = document.getElementById('theme_id').value;
+        const params = new URLSearchParams();
+        if (themeId) {
+            params.append('theme_id', themeId);
+        }
 
+        try {
+    const response = await fetch('filter_articles.php?' + params.toString(), {
+        method: 'GET',
+    });
+    console.log('Request URL:', 'filter_articles.php?' + params.toString()); // Log the URL for debugging
+    if (response.ok) {
+        const resultHTML = await response.text();
+        console.log('Response:', resultHTML); // Log the response for debugging
+        document.getElementById('filteredResults').innerHTML = resultHTML;
+    } else {
+        console.error('Error fetching data:', response.status);
+    }
+} catch (error) {
+    console.error('Error fetching data:', error);
+}
+    }
+</script>
         <?php if (isset($_SESSION['id_user'])): ?>
             <?php
             $id = $_SESSION['id_user'];
@@ -359,9 +409,12 @@ $themes = $theme->ShowThemes();
         <?php endif; ?>
 
         <?php if ($rs): ?>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4 ">
-        <?php foreach ($rs as $r): ?>
-            <?php
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4">
+        <?php 
+        $hasAcceptedArticles = false;
+        foreach ($rs as $r): 
+            if ($r['status'] == "accepted"): 
+                $hasAcceptedArticles = true; // Mark that we have at least one accepted article
                 $status = htmlspecialchars($r['status']);
                 $statusClass = 'text-gray-500';
                 switch ($status) {
@@ -375,7 +428,7 @@ $themes = $theme->ShowThemes();
                         $statusClass = 'bg-red-100 text-red-700';
                         break;
                 }
-            ?>
+        ?>
             <div class="bg-white rounded-lg shadow-md overflow-hidden md:mt-40 mt-40">
                 <!-- Post Header -->
                 <div class="flex items-center p-4 justify-between">
@@ -389,18 +442,6 @@ $themes = $theme->ShowThemes();
                     <button class="text-gray-600 hover:text-gray-800 optionsMenu">
                         <i class="fa fa-ellipsis-h"></i>
                     </button>
-                    <!-- <button class="text-gray-600 hover:text-gray-800 relative ">
-                        <i class="fa fa-ellipsis-h"></i>
-                        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg hidden dropdownMenu">
-                            <ul class="text-sm text-gray-700">
-                                <li><a href="#" class="block px-4 py-2">Edit</a></li>
-                                <form action="delete_article.php " method="post">
-                                    <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($r['idArticle']); ?>" />
-                                    <li><button type="submit" name="deletearticle" class="block px-4 py-2 text-red-600">Delete</button></li>
-                                </form>
-                            </ul>
-                        </div>
-                    </button> -->
                 </div>
 
                 <!-- Post Content -->
@@ -427,19 +468,6 @@ $themes = $theme->ShowThemes();
                             <p class="text-sm text-gray-600"><?php echo htmlspecialchars($r['tags']); ?></p>
                         </div>
                     <?php endif; ?>
-
-                    <div id="commentSection<?php echo $r['idArticle']; ?>" class="mt-4 hidden p-4 border rounded-lg bg-gray-50">
-                        <div class="flex items-center space-x-3">
-                            <img src="../../assets/user.png" alt="User Profile" class="w-10 h-10 rounded-full">
-                            <textarea id="commentInput<?php echo $r['idArticle']; ?>" rows="3" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Add a comment..."></textarea>
-                        </div>
-                        
-                        <div class="flex justify-between items-center mt-2">
-                            <button onclick="submitComment(<?php echo $r['idArticle']; ?>)" class="flex items-center justify-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <i class="fa-solid fa-paper-plane mr-2"></i> Post Comment
-                                </button>
-                            </div>
-                    </div>
                 </div>
 
                 <!-- Actions (Like, Comment, Share) -->
@@ -455,45 +483,39 @@ $themes = $theme->ShowThemes();
                         <i class="fa-solid fa-share mr-2"></i> Share
                     </button>
                 </div>
-
-                <!-- Review Modal -->
-                <!-- <div id="reviewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white w-96 p-6 rounded-lg shadow-lg relative">
-                        <button id="closeReviewModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✕</button>
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Add Your Comment</h3>
-                        <form id="reviewForm" action="add_comment.php" method="POST">
-                            <input type="hidden" id="reviewVehicleId" name="article_id" value="<?php echo $r['idArticle'] ?>">
-                            <input type="hidden" id="reviewuserId" name="user_id" value="<?php echo $_SESSION['id_user']; ?>">
-                            <div class="mb-4">
-                                <label for="commentContent" class="block text-sm font-medium text-gray-700">Your Comment</label>
-                                <textarea id="commentContent" name="content" rows="4" class="w-full mt-1 p-2 border rounded-lg" required></textarea>
-                            </div>
-                            <button type="submit" name="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
-                                Submit Comment
-                            </button>
-                        </form>
-                    </div>
-                </div> -->
             </div>
-        <?php endforeach; ?>
+        <?php 
+            endif; 
+        endforeach; 
+        ?>
+
+        <!-- If no accepted articles -->
+        <?php if (!$hasAcceptedArticles): ?>
+            <p class="text-gray-600 text-lg mt-8 text-center">No accepted blogs available at the moment.</p>
+        <?php endif; ?>
     </div>
 <?php else: ?>
-    <p class="text-gray-600 text-lg mt-8 text-center">No Blogs available at the moment.</p>
+    <p class="text-gray-600 text-lg mt-8 text-center">No blogs available at the moment.</p>
 <?php endif; ?>
 
+
 <script>
+    //for comments
     function toggleCommentInput(articleId) {
         var commentSection = document.getElementById('commentSection' + articleId);
         commentSection.classList.toggle('hidden');
     }
-    function submitComment(articleId) {
+    function submitComment(event, articleId) {
+        event.preventDefault(); 
         var commentInput = document.getElementById('commentInput' + articleId);
-        var commentContent = commentInput.value;
-
-        if (commentContent.trim() !== '') {
+        var commentContent = commentInput.value.trim();
+        if (commentContent !== '') {
             console.log('Comment submitted: ' + commentContent);
-            commentInput.value = '';
+            document.getElementById('commentSection' + articleId).submit();
+            commentInput.value = ''; 
             toggleCommentInput(articleId);
+        } else {
+            alert('Comment cannot be empty.');
         }
     }
 </script>
@@ -516,39 +538,8 @@ $themes = $theme->ShowThemes();
             menu.classList.add('hidden');
         });
     });
+
 </script>
-
-
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const reviewModal = document.getElementById('reviewModal');
-            const closeReviewModal = document.getElementById('closeReviewModal');
-            const reviewForm = document.getElementById('reviewForm');
-
-            document.querySelectorAll('.btncomment').forEach(button => {
-                button.addEventListener('click', () => {
-                    const vehicleId = button.getAttribute('data-vehicle-id');
-                    const userId = button.getAttribute('data-user-id');
-                    document.getElementById('reviewVehicleId').value = vehicleId;
-                    document.getElementById('reviewuserId').value = userId;
-
-                    reviewModal.classList.remove('hidden');
-                });
-            });
-            closeReviewModal.addEventListener('click', () => {
-                reviewModal.classList.add('hidden');
-            });
-            reviewModal.addEventListener('click', (event) => {
-                if (event.target === reviewModal) {
-                    reviewModal.classList.add('hidden');
-                }
-            });
-        });
-
-    </script> -->
-
-
-
     <script>
         //pour like
         document.querySelectorAll('.like-btn').forEach(button => {
@@ -595,40 +586,21 @@ $themes = $theme->ShowThemes();
 
 
         //pour model edit
-        document.querySelectorAll('.edit-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const reservationId = button.getAttribute('data-reservation-id');
-                document.getElementById(`editReservationForm-${reservationId}`).classList.remove('hidden');
-            });
-        });
+        // document.querySelectorAll('.edit-button').forEach(button => {
+        //     button.addEventListener('click', () => {
+        //         const reservationId = button.getAttribute('data-reservation-id');
+        //         document.getElementById(`editReservationForm-${reservationId}`).classList.remove('hidden');
+        //     });
+        // });
 
-        document.querySelectorAll('.close-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const reservationId = button.getAttribute('data-reservation-id');
-                document.getElementById(`editReservationForm-${reservationId}`).classList.add('hidden');
-            });
-        });
+        // document.querySelectorAll('.close-button').forEach(button => {
+        //     button.addEventListener('click', () => {
+        //         const reservationId = button.getAttribute('data-reservation-id');
+        //         document.getElementById(`editReservationForm-${reservationId}`).classList.add('hidden');
+        //     });
+        // });
 
-        //pour delete reservation
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const reservationId = button.getAttribute('data-reservation-id');
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = `deleteReservation.php?id=${reservationId}`;
-                    }
-                });
-            });
-        });
+        
 
         //pour reserponsive 
         const hamburgerr = document.getElementById("hamburgerr");
@@ -667,55 +639,6 @@ $themes = $theme->ShowThemes();
         window.onpopstate = function () {
             history.pushState(null, null, location.href);
         };
-
-
-        // pour les reservation 
-
-        // document.querySelectorAll('.vehicle-card').forEach(card => {
-        //     card.addEventListener('click', function () {
-        //         const vehicleId = card.getAttribute('data-vehicle-id');
-        //         console.log(`Vehicle ID: ${vehicleId}`);
-        //         document.getElementById('vehicle_id').value = vehicleId;
-        //         document.getElementById('reservationModal').classList.remove('hidden');
-        //     });
-        // });
-
-        // function handleCardClick(vehicleId) {
-        //     console.log("Sending Vehicle ID:", vehicleId);
-
-        //     fetch('get_vehicle_details.php', {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({ vehicleId: vehicleId }),
-        //     })
-        //         .then(response => {
-        //             console.log("Response received:", response);
-        //             return response.json();
-        //         })
-        //         .then(data => {
-        //             console.log('Fetched Data:', data);
-
-        //             if (data.error) {
-        //                 console.error(data.error);
-        //                 return;
-        //             }
-        //             document.getElementById('modalModel').innerText = data.model || 'N/A';
-        //             document.getElementById('modalTransmission').innerText = `Transmission: ${data.transmissionType || 'N/A'}`;
-        //             document.getElementById('modalFuel').innerText = `Fuel: ${data.fuelType || 'N/A'}`;
-        //             document.getElementById('modalPrice').innerText = `Price: $${data.price_per_day || 'N/A'}/day`;
-
-        //             document.getElementById('reservationModal').classList.remove('hidden');
-        //         })
-        //         .catch(error => {
-        //             console.error('Fetch Error:', error);
-        //         });
-
-        // }
-
-        // document.getElementById('closeModal').addEventListener('click', function () {
-        //     document.getElementById('reservationModal').classList.add('hidden');
-        // });
-
     </script>
     <script>
         //pour model de add article

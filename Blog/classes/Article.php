@@ -35,6 +35,20 @@ class Article {
         $this->status = $status;
         $this->tags = $tags;
     }
+    public function getFilteredArticles($themeId = null) {
+        $pdo = DatabaseConnection::getInstance()->getConnection();
+        $query = "SELECT * FROM articles";
+        if ($themeId) {
+            $query .= " WHERE theme_id = :theme_id";
+        }
+        $stmt = $pdo->prepare($query);
+        if ($themeId) {
+            $stmt->bindParam(':theme_id', $themeId);
+        }
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function addArticle() {
         try {
             $pdo = DatabaseConnection::getInstance()->getConnection();

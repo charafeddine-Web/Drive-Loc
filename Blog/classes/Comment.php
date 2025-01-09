@@ -22,7 +22,9 @@ class Comment{
         try {
             $db = DatabaseConnection::getInstance()->getConnection();
             $query = "INSERT INTO comments (content, article_id, user_id) VALUES (:content, :article_id, :user_id)";
-            
+            if (!$query) {
+                die("Error preparing statement: " . $db->error);
+            }
             $stmt = $db->prepare($query);
             $stmt->bindParam(':content', $this->content);
             $stmt->bindParam(':article_id', $this->article_id);

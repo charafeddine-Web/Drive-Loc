@@ -234,7 +234,7 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                             <?php
                            
                             try {
-                                $article = new Article(null,null,null,null,null,null,null,null,null);
+                                $article = new Article(null,null,null,null,null,null,null,null,null,null);
                                 $rs=$article->ShowArticles();
                     
                                 if ($rs) {
@@ -261,8 +261,13 @@ if (!isset($_SESSION['id_user']) || (isset($_SESSION['id_role']) && $_SESSION['i
                                         echo '<td class="border p-2">' . htmlspecialchars($r['author_name']) . '</td>';
                                         echo '<td class="border p-2">' . htmlspecialchars($r['tag_name']) . '</td>';
                                         echo '<td class="border p-2">' . htmlspecialchars($r['created_at']) . '</td>';
-                                        echo '<td class="border p-2">' . htmlspecialchars(string: $r['imageArt']) . '</td>';
-                                        echo '<td class="border p-4 text-center text-sm ' . $statusClass . ' rounded-lg font-semibold">' . $status . '</td>';
+                                        echo '<td class="border p-2">';
+                                        if (!empty($r['imageArt'])) {
+                                            echo '<img src="../../assets/image/' . htmlspecialchars($r['imageArt']) . '" alt="Article Image" class="w-16 h-16 object-cover rounded">';
+                                        } else {
+                                            echo 'No image available';
+                                        }
+                                        echo '</td>';                                        echo '<td class="border p-4 text-center text-sm ' . $statusClass . ' rounded-lg font-semibold">' . $status . '</td>';
                                         echo '<td class="border p-4 text-center">';
                                         echo '<a href="accepter_Art.php?idArticle=' . $r['idArticle'] . '" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-300 mx-2">Accepter</a>';
                                         echo '<a href="refuser_Art.php?idArticle=' . $r['idArticle'] . '" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300 mx-2">Refuser</a>';

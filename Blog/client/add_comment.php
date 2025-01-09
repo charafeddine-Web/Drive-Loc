@@ -1,11 +1,16 @@
 <?php
 require_once '../classes/Comment.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitcomment'])) {
     if (!$_POST['article_id']) {
         echo "Article does not exist.";
     }
-    $content = $_POST['content'];
+    $content = trim($_POST['comments']); 
+    if (empty($content)) {
+        die("Comment content cannot be empty.");
+    }
+    
+    
     $articleId = $_POST['article_id'];
     $userId = $_POST['user_id'];
 
