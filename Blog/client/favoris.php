@@ -27,8 +27,14 @@ try{
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body class="bg-gray-100">
-    <div class="container mx-auto py-8">
+    <div class="container mx-auto py-2 px-4">
+    <div class="flex items-center justify-between mb-8">
+        <a href="./index.php" class="text-blue-500 hover:underline">
+            <i class="fas fa-home text-blue-500 text-lg"></i> 
+        </a>
         <h1 class="text-3xl font-bold text-center mb-8">Mes Favoris</h1>
+    </div>
+
         
         <?php if (!empty($favorites)): ?>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

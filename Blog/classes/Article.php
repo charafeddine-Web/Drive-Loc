@@ -35,6 +35,33 @@ class Article {
         $this->status = $status;
         $this->tags = $tags;
     }
+    
+    public function AccepteArt() {
+        try {
+            $con = DatabaseConnection::getInstance()->getConnection();
+            $sql = "UPDATE articles SET status = 'Accepted' WHERE idArticle = :idArticle";
+            $stmt = $con->prepare($sql);
+            $stmt->bindParam(':idArticle', $this->idArticle);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            echo "Error accepting Articles: " . $e->getMessage();
+            return false;
+        }
+    }
+    
+    public function RefuseArt() {
+        try {
+            $con = DatabaseConnection::getInstance()->getConnection();
+            $sql = "UPDATE articles SET status = 'Rejected' WHERE idArticle = :idArticle";
+            $stmt = $con->prepare($sql);
+            $stmt->bindParam(':idArticle', $this->idArticle);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            echo "Error refusing Article: " . $e->getMessage();
+            return false;
+        }
+    }
+    
     public function getFilteredArticles($themeId = null) {
         $pdo = DatabaseConnection::getInstance()->getConnection();
         $query = "SELECT * FROM articles";
@@ -129,6 +156,17 @@ class Article {
             echo "Error: " . $e->getMessage();
         }
     }
+    // public static function ShowArticleById(){
+    //     $pdo = DatabaseConnection::getInstance()->getConnection();
+    //     try{
+    //         $sql = "SELECT * from articles where idArticle = :idArticle";
+    //         $stmt=$pdo->prepare($sql);
+    //         $stmt->execute();
+    //         return  $stmt->fetchAll(\PDO::FETCH_ASSOC) ;
+    //     }catch (\Exception $e) {
+    //         echo "Error: " . $e->getMessage();
+    //     }
+    // }
 
     public function ShowArticles_Client(){
         $pdo = DatabaseConnection::getInstance()->getConnection();

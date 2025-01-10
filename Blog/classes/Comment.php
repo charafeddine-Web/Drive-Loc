@@ -47,7 +47,11 @@ class Comment{
                 comments.idComments,
                 comments.content,
                 comments.created_at,
-                articles.title AS article_title,
+                articles.title AS title,
+                articles.content AS content,
+                articles.imageArt AS imageArt,
+                articles.imageArt AS video,
+                articles.imageArt AS created_at,
                 users.fullname AS user_name
             FROM 
                 comments

@@ -201,7 +201,7 @@ $themes = $theme->ShowThemes();
 
                 <!-- Navigation Links Section -->
                 <div class="hidden lg:flex items-center space-x-12">
-                    <div class="flex space-x-8">
+                    <div class="flex space-x-12 ">
                         <a href="../../client/index.php" id="showCars"
                             class="nav-link  text-lg font-semibold hover:text-blue-800 transition-colors flex items-center">
                             <i class="fa-solid fa-car-rear mr-2"></i> Cars
@@ -210,10 +210,13 @@ $themes = $theme->ShowThemes();
                             class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors flex items-center">
                             <i class="fa-solid fa-clock-rotate-left mr-2"></i> Reservations
                         </a>
-                       
+                        <a href="./blogs.php" id="showBlog"
+                            class="nav-link  text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
+                            <i class="fa-solid fa-book-open mr-2"></i> Blogs
+                        </a>
                         <a href="./index.php" id="showBlog"
                             class="nav-link active text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
-                            <i class="fa-solid fa-book-open mr-2"></i>Blogs
+                            <i class="fa-solid fa-book-open mr-2"></i> Me Blogs
                         </a>
                         <a href="./favoris.php" id="showBlog"
                             class="nav-link  text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
@@ -252,9 +255,13 @@ $themes = $theme->ShowThemes();
                     class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
                     <i class="fa-solid fa-clock-rotate-left mr-2"></i> My Reservations
                 </a>
+                <a href="./blogs.php" id="showBlogMobile"
+                    class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
+                    <i class="fa-solid fa-book-open mr-2"></i>  Blogs
+                </a>
                 <a href="./index.php" id="showBlogMobile"
                     class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
-                    <i class="fa-solid fa-book-open mr-2"></i> Blogs
+                    <i class="fa-solid fa-book-open mr-2"></i>  Me Blogs
                 </a>
                 <a href="./favoris.php" id="showBlogMobile"
                     class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
@@ -344,7 +351,7 @@ $themes = $theme->ShowThemes();
 </div>
 
        <div id="ArticlesPage" class="max-full fixed mx-auto p-6 bg-gray-900" style="left:0px;right:0px">
-            <div class="flex flex-col md:flex-row items-center justify-between mt-14">
+            <div class="flex flex-col md:flex-row items-center justify-between mt-20">
                 <h3 class="text-3xl font-bold text-gray-50">My Articles</h3>
                 <div class="mt-6 flex flex-col md:flex-row justify-between gap-8">
                     <div class="flex items-center space-x-4">
@@ -376,7 +383,6 @@ $themes = $theme->ShowThemes();
     <!-- Results will be dynamically loaded here -->
 </div>
 <script>
-    // Function to apply the filter
     async function applyFilter() {
         const themeId = document.getElementById('theme_id').value;
         const params = new URLSearchParams();
@@ -388,10 +394,8 @@ $themes = $theme->ShowThemes();
     const response = await fetch('filter_articles.php?' + params.toString(), {
         method: 'GET',
     });
-    console.log('Request URL:', 'filter_articles.php?' + params.toString()); // Log the URL for debugging
     if (response.ok) {
         const resultHTML = await response.text();
-        console.log('Response:', resultHTML); // Log the response for debugging
         document.getElementById('filteredResults').innerHTML = resultHTML;
     } else {
         console.error('Error fetching data:', response.status);
@@ -414,8 +418,7 @@ $themes = $theme->ShowThemes();
         <?php 
         $hasAcceptedArticles = false;
         foreach ($rs as $r): 
-            if ($r['status'] == "accepted"): 
-                $hasAcceptedArticles = true; 
+          
                 $status = htmlspecialchars($r['status']);
                 $statusClass = 'text-gray-500';
                 switch ($status) {
@@ -463,12 +466,16 @@ $themes = $theme->ShowThemes();
                             Status: <?php echo ucfirst($status); ?>
                         </span>
                     </p>
-                    <?php if (!empty($r['tags'])): ?>
-                        <div class="mt-4">
-                            <span class="font-semibold text-gray-800">Tags:</span>
-                            <p class="text-sm text-gray-600"><?php echo htmlspecialchars($r['tags']); ?></p>
-                        </div>
-                    <?php endif; ?>
+                   
+                    <div class="mt-4 flex items-center justify-between p-4 bg-gray-50">
+                        <?php if (!empty($r['tags'])): ?>
+                            <div class="mt-4 flex gap-2 items-center">
+                                <span class="font-semibold text-gray-800">Tags:</span>
+                                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($r['tags']); ?></p>
+                            </div>
+                        <?php endif; ?>
+                        <a href="comments.php" class="text-blue-600 ">Voir Plus+</a>
+                   </div>
                 </div>
 
                 <!-- Actions (Like, Comment, Share) -->
@@ -491,14 +498,10 @@ $themes = $theme->ShowThemes();
                 </div>
             </div>
         <?php 
-            endif; 
+            
         endforeach; 
         ?>
 
-        <!-- If no accepted articles -->
-        <?php if (!$hasAcceptedArticles): ?>
-            <p class="text-gray-600 text-lg mt-8 text-center">No accepted blogs available at the moment.</p>
-        <?php endif; ?>
     </div>
 <?php else: ?>
     <p class="text-gray-600 text-lg mt-8 text-center">No blogs available at the moment.</p>
