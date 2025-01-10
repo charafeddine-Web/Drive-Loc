@@ -178,11 +178,9 @@ $themes = $theme->ShowThemes();
 </head>
 
 <body style="scroll-behavior: smooth;">
-    <!-- Navigation -->
     <nav class="bg-white shadow-lg fixed z-50 w-full">
         <div class="max-w-7xl mx-auto px-8 py-6">
             <div class="flex justify-between items-center">
-                <!-- Logo Section -->
                 <div class="flex items-center space-x-3">
                     <i
                         class="fa-solid fa-car-side text-4xl bg-gradient-to-r from-black to-blue-900 text-transparent bg-clip-text"></i>
@@ -192,14 +190,12 @@ $themes = $theme->ShowThemes();
                     </div>
                 </div>
 
-                <!-- Mobile Menu Button -->
                 <div class="lg:hidden flex items-center">
                     <button id="hamburgerr" class="text-2xl text-gray-800 focus:outline-none">
                         <i class="fa-solid fa-bars"></i>
                     </button>
                 </div>
 
-                <!-- Navigation Links Section -->
                 <div class="hidden lg:flex items-center space-x-12">
                     <div class="flex space-x-12 ">
                         <a href="../../client/index.php" id="showCars"
@@ -222,10 +218,7 @@ $themes = $theme->ShowThemes();
                             class="nav-link  text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
                             <i class="fa-solid fa-book-open mr-2"></i>favoris
                         </a>
-                        <a href="./comments.php" id="showBlogMobile"
-                            class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
-                            <i class="fa-solid fa-comments mr-2"></i> Comment
-                        </a>
+                        
                     </div>
 
                     <div class="flex items-center space-x-6">
@@ -241,7 +234,6 @@ $themes = $theme->ShowThemes();
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu -->
         <div id="mobileMenu" class="lg:hidden bg-white shadow-lg fixed inset-0 z-40 hidden">
             <div class="flex flex-col items-center py-6">
                 <button id="closeMenuu" class="text-3xl text-gray-800 absolute top-0 right-4 pb-8">
@@ -267,10 +259,7 @@ $themes = $theme->ShowThemes();
                     class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
                     <i class="fa-solid fa-book-open mr-2"></i> favoris
                 </a>
-                <a href="./index.php" id="showBlogMobile"
-                    class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
-                    <i class="fa-solid fa-comments mr-2"></i> Mes Comments
-                </a>
+                
                 <form action="../../Visiteur/logout.php" method="post">
                     <button type="submit"
                         class="bg-black hover:bg-gray-800 text-white py-2.5 px-6 rounded-full transition-colors duration-300 mt-4 w-full text-center">
@@ -285,14 +274,11 @@ $themes = $theme->ShowThemes();
     <div id="addArticleModal"
     class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
     <div class="bg-white shadow-xl rounded-lg p-8 w-11/12 md:w-2/3 lg:w-1/3 relative mt-10 mb-20">
-        <!-- Close Button -->
         <button id="closeModal" 
             class="absolute top-1 right-4 text-gray-500 hover:text-red-600 transition text-xl">
             &times;
         </button>
-        <!-- Modal Header -->
         <h3 class="text-2xl font-semibold text-gray-700 text-center mb-2">Add New Article</h3>
-        <!-- Modal Form -->
         <form id="addArticleForm" method="POST" action="" enctype="multipart/form-data">
             
             <div class="flex items-center justify-between">
@@ -380,8 +366,7 @@ $themes = $theme->ShowThemes();
         </div>
      
         <div id="filteredResults" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4">
-    <!-- Results will be dynamically loaded here -->
-</div>
+         </div>
 <script>
     async function applyFilter() {
         const themeId = document.getElementById('theme_id').value;
@@ -434,7 +419,6 @@ $themes = $theme->ShowThemes();
                 }
         ?>
             <div class="bg-white rounded-lg shadow-md overflow-hidden md:mt-40 mt-40">
-                <!-- Post Header -->
                 <div class="flex items-center p-4 justify-between">
                     <div class="flex items-center">
                         <img src="../../assets/user.png" alt="User Profile" class="w-10 h-10 rounded-full">
@@ -448,7 +432,6 @@ $themes = $theme->ShowThemes();
                     </button>
                 </div>
 
-                <!-- Post Content -->
                 <div class="p-4">
                     <h3 class="text-lg font-bold text-gray-800 mb-2"><?php echo htmlspecialchars($r['title']); ?></h3>
                     <p class="text-sm text-gray-600 truncate"><?php echo htmlspecialchars($r['content']); ?></p>
@@ -474,19 +457,19 @@ $themes = $theme->ShowThemes();
                                 <p class="text-sm text-gray-600"><?php echo htmlspecialchars($r['tags']); ?></p>
                             </div>
                         <?php endif; ?>
-                        <a href="comments.php" class="text-blue-600 ">Voir Plus+</a>
+                        <a href="details.php?id_article=<?php echo htmlspecialchars($r['idArticle']); ?>" class="text-blue-600">Voir Plus+</a>
                    </div>
                 </div>
 
-                <!-- Actions (Like, Comment, Share) -->
                 <div class="border-t flex justify-around p-4 text-gray-600 bg-gray-50">
                     <button class="like-btn flex items-center hover:text-blue-600">
                         <i class="fa-solid fa-thumbs-up mr-2"></i> Like
                     </button>
 
-                    <button onclick="toggleCommentInput(<?php echo $r['idArticle']; ?>)" class="btncomment flex items-center hover:text-blue-600">
-                        <i class="fa-solid fa-comment mr-2"></i> Comment
-                    </button>
+                    <button onclick="toggleCommentInput(<?php echo $r['idArticle']; ?>)" 
+                    class="btncomment flex items-center hover:text-blue-600">
+                <i class="fa-solid fa-comment mr-2"></i> Comment
+            </button>
                     <form action="Add_favoris.php" method="post">
                         <input type="hidden" name="id_article" value="<?php echo $r['idArticle']; ?>">
                         <input type="hidden" name="user_id" value="<?php echo $_SESSION['id_user']; ?>">

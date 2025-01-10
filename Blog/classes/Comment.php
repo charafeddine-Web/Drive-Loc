@@ -50,8 +50,8 @@ class Comment{
                 articles.title AS title,
                 articles.content AS content,
                 articles.imageArt AS imageArt,
-                articles.imageArt AS video,
-                articles.imageArt AS created_at,
+                articles.video AS video,
+                articles.created_at AS created_article,
                 users.fullname AS user_name
             FROM 
                 comments
@@ -67,13 +67,40 @@ class Comment{
         return $stmt->fetchAll(PDO::FETCH_ASSOC); 
     }
     
-
-    public static function getCommentsByArticle($article_id) {
+    public static function getCommentsByArticle($articleId) {
         $db = DatabaseConnection::getInstance()->getConnection();
-        $stmt = $db->prepare("SELECT * FROM comments WHERE article_id = ? ORDER BY create_at DESC");
-        $stmt->execute([$article_id]);
+        $query = "
+            SELECT 
+                comments.content AS comment_content,
+                comments.created_at AS comment_date,
+                articles.title AS article_title,
+                articles.content AS article_content,
+                articles.created_at AS created_article,
+                articles.imageArt AS article_image,
+                users.fullname AS user_name
+            FROM 
+                comments
+            JOIN 
+                articles ON comments.article_id = articles.idArticle
+            JOIN 
+                users ON comments.user_id = users.id_user
+            WHERE 
+                articles.idArticle = :articleId
+            ORDER BY 
+                comments.created_at DESC
+        ";
+        $stmt = $db->prepare($query);
+        $stmt->bindValue(':articleId', $articleId, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    // public static function getCommentsByArticle($article_id) {
+    //     $db = DatabaseConnection::getInstance()->getConnection();
+    //     $stmt = $db->prepare("SELECT * FROM comments WHERE article_id = ? ORDER BY create_at DESC");
+    //     $stmt->execute([$article_id]);
+    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
 
     public static function getCommentById($id) {
         $db = DatabaseConnection::getInstance()->getConnection();
@@ -88,13 +115,13 @@ class Comment{
         return $stmt->rowCount() > 0; 
     }
     
-    public static function countCommentsByArticle($article_id) {
-        $db = DatabaseConnection::getInstance()->getConnection();
-        $stmt = $db->prepare("SELECT COUNT(*) as comment_count FROM comments WHERE article_id = ?");
-        $stmt->execute([$article_id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['comment_count']; 
-    }
+    // public static function countCommentsByArticle($article_id) {
+    //     $db = DatabaseConnection::getInstance()->getConnection();
+    //     $stmt = $db->prepare("SELECT COUNT(*) as comment_count FROM comments WHERE article_id = ?");
+    //     $stmt->execute([$article_id]);
+    //     $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    //     return $result['comment_count']; 
+    // }
 
     public function DeleteComment(){
         $db=DatabaseConnection::getInstance()->getConnection();

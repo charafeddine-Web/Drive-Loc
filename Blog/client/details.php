@@ -10,46 +10,74 @@ if (!isset($_SESSION['id_user']) || $_SESSION['id_role'] !== 2) {
     exit;
 }
 
-try {
-    $comments = Comment::getAllComments();
-    if (!$comments || count($comments) === 0) {
-        echo "<p class='text-red-600'>Aucun commentaire trouvé.</p>";
-        exit();
-    }
-} catch (\PDOException $e) {
-    echo "<p class='text-red-600'>Erreur lors de la récupération des commentaires : " . htmlspecialchars($e->getMessage()) . "</p>";
+$articleId = $_GET['id_article'] ?? null;
+if (!$articleId) {
+    echo "<p class='text-red-600'>Article non spécifié.</p>";
     exit;
 }
-?>
-<!DOCTYPE html>
+
+try {
+    $comments = Comment::getCommentsByArticle($articleId);
+    if (!$comments || count($comments) === 0) {
+        echo "<div class='text-center font-extrabold '><p class='text-red-600'>Aucun commentaire trouvé pour cet article.</p>";
+        exit();
+    }
+    $article = $comments[0]; 
+} catch (\PDOException $e) {
+    echo "<p class='text-red-600'>Erreur lors de la récupération des données : " . htmlspecialchars($e->getMessage()) . "</p>";
+    exit;
+}
+
+?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes Favoris</title>
+    <title>Commentaires</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body class="bg-gray-100">
-    <div class="container mx-auto py-4 px-4">
-        <div class="flex items-center justify-between mb-8">
-            <a href="./index.php" class="text-blue-500 hover:underline flex items-center">
-                <i class="fas fa-home text-blue-500 text-lg mr-2"></i> Accueil
-            </a>
-        </div>
-        <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">Commentaires de <?php echo htmlspecialchars($_SESSION['fullname']); ?></h2>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <?php foreach ($comments as $comment): ?>
-                <div class="mb-4 border-b pb-4">
-                    <h3 class="text-xl font-semibold text-gray-700"><?php echo htmlspecialchars($comment['article_title']); ?></h3>
-                    <p class="text-gray-600 mb-2"><?php echo htmlspecialchars($comment['comment_content']); ?></p>
-                    <p class="text-sm text-gray-500">Par <?php echo htmlspecialchars($comment['user_name']); ?> le <?php echo htmlspecialchars($comment['comment_date']); ?></p>
-                </div>
-            <?php endforeach; ?>
-        </div>
+<div class="container mx-auto py-4 px-4 ">
+    <div class="flex items-center justify-between mb-8">
+        <a href="./index.php" class="text-blue-500 hover:underline flex items-center">
+            <i class="fas fa-home text-blue-500 text-lg mr-2"></i> Accueil
+        </a>
     </div>
 
-    
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8 mx-10">
+        <h2 class="text-3xl font-bold text-gray-800"><?php echo htmlspecialchars($article['article_title']); ?></h2>
+        <span class="text-sm text-gray-500"><?php echo htmlspecialchars($article['created_article']); ?></span>
+        <div class="flex  items-start gap-8 mt-4">
+        <?php if (!empty($article['article_image'])): ?>
+            <img src="<?php echo htmlspecialchars($article['article_image']); ?>" alt="Article Image" class="w-80 h-80 rounded-md my-4">
+        <?php endif; ?>
+        <p class="text-gray-700 mt-2"><?php echo htmlspecialchars($article['article_content']); ?></p>
+
+        </div>
+        </div>
+
+    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Commentaires</h3>
+    <div class="space-y-6 mx-20">
+        <?php foreach ($comments as $comment): ?>
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="flex items-start space-x-4">
+                    <img src="https://via.placeholder.com/50" alt="User Image" class="w-12 h-12 rounded-full">
+
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-sm font-semibold text-gray-800"><?php echo htmlspecialchars($comment['user_name']); ?></h4>
+                            <span class="text-xs text-gray-500"><?php echo htmlspecialchars($comment['comment_date']); ?></span>
+                        </div>
+                        <p class="text-gray-700 mt-2"><?php echo htmlspecialchars($comment['comment_content']); ?></p>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+
+
 <script>
     //pour reserponsive 
     const hamburgerr = document.getElementById("hamburgerr");
@@ -129,6 +157,7 @@ try {
     });
 
 </script>
+
 
 
 

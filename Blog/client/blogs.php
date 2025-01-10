@@ -181,9 +181,8 @@ $themes = $theme->ShowThemes();
 <body style="scroll-behavior: smooth;">
     <!-- Navigation -->
     <nav class="bg-white shadow-lg fixed z-50 w-full">
-        <div class="max-w-7xl mx-auto px-8 py-6">
+        <div class="max-w-7xl mx-auto px-8 py-4">
             <div class="flex justify-between items-center">
-                <!-- Logo Section -->
                 <div class="flex items-center space-x-3">
                     <i
                         class="fa-solid fa-car-side text-4xl bg-gradient-to-r from-black to-blue-900 text-transparent bg-clip-text"></i>
@@ -193,14 +192,12 @@ $themes = $theme->ShowThemes();
                     </div>
                 </div>
 
-                <!-- Mobile Menu Button -->
                 <div class="lg:hidden flex items-center">
                     <button id="hamburgerr" class="text-2xl text-gray-800 focus:outline-none">
                         <i class="fa-solid fa-bars"></i>
                     </button>
                 </div>
 
-                <!-- Navigation Links Section -->
                 <div class="hidden lg:flex items-center space-x-12">
                     <div class="flex space-x-8">
                         <a href="../../client/index.php" id="showCars"
@@ -224,10 +221,7 @@ $themes = $theme->ShowThemes();
                             class="nav-link  text-lg  font-semibold hover:text-blue-800 transition-colors flex items-center">
                             <i class="fa-solid fa-book-open mr-2"></i>favoris
                         </a>
-                        <a href="./comments.php" id="showBlogMobile"
-                            class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
-                            <i class="fa-solid fa-comments mr-2"></i> Comment
-                        </a>
+                        
                     </div>
 
                     <div class="flex items-center space-x-6">
@@ -243,7 +237,6 @@ $themes = $theme->ShowThemes();
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu -->
         <div id="mobileMenu" class="lg:hidden bg-white shadow-lg fixed inset-0 z-40 hidden">
             <div class="flex flex-col items-center py-6">
                 <button id="closeMenuu" class="text-3xl text-gray-800 absolute top-0 right-4 pb-8">
@@ -269,10 +262,6 @@ $themes = $theme->ShowThemes();
                     class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
                     <i class="fa-solid fa-book-open mr-2"></i> favoris
                 </a>
-                <a href="./index.php" id="showBlogMobile"
-                    class="nav-link text-lg font-semibold hover:text-blue-800 transition-colors py-2 px-4 w-full text-center">
-                    <i class="fa-solid fa-comments mr-2"></i> Mes Comments
-                </a>
                 <form action="../../Visiteur/logout.php" method="post">
                     <button type="submit"
                         class="bg-black hover:bg-gray-800 text-white py-2.5 px-6 rounded-full transition-colors duration-300 mt-4 w-full text-center">
@@ -287,16 +276,12 @@ $themes = $theme->ShowThemes();
     <div id="addArticleModal"
     class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
     <div class="bg-white shadow-xl rounded-lg p-8 w-11/12 md:w-2/3 lg:w-1/3 relative mt-10 mb-20">
-        <!-- Close Button -->
         <button id="closeModal" 
             class="absolute top-1 right-4 text-gray-500 hover:text-red-600 transition text-xl">
             &times;
         </button>
-        <!-- Modal Header -->
         <h3 class="text-2xl font-semibold text-gray-700 text-center mb-2">Add New Article</h3>
-        <!-- Modal Form -->
         <form id="addArticleForm" method="POST" action="" enctype="multipart/form-data">
-            
             <div class="flex items-center justify-between">
             <div class="mb-4">
                 <label for="title" class="block text-sm font-medium text-gray-600">Title</label>
@@ -307,7 +292,6 @@ $themes = $theme->ShowThemes();
                 <label for="theme_id" class="block text-sm font-medium text-gray-600">Theme</label>
                 <select id="theme_id" name="theme_id" required
                     class="w-full mt-1 p-3 rounded-md border border-gray-300 focus:ring-blue-400 focus:border-blue-400">
-                    <option value="">Select Theme</option>
                     <?php foreach ($themes as $theme): ?>
                         <option value="<?php echo htmlspecialchars($theme['idTheme']); ?>">
                             <?php echo htmlspecialchars($theme['name']); ?>
@@ -315,6 +299,8 @@ $themes = $theme->ShowThemes();
                     <?php endforeach; ?>
                 </select>
             </div>
+
+
             </div>
             <div class="mb-4">
                 <label for="content" class="block text-sm font-medium text-gray-600">Content</label>
@@ -333,8 +319,6 @@ $themes = $theme->ShowThemes();
                         class="w-full mt-1 p-2 rounded-md border border-gray-300 focus:ring-blue-400 focus:border-blue-400">
                 </div>
             </div>
-            
-           
             <div class="mb-6">
                 <label for="tags" class="block text-sm font-medium text-gray-600">Tags</label>
                 <div id="tags-container" class="flex flex-wrap items-center p-2 border border-gray-300 rounded-md">
@@ -351,39 +335,35 @@ $themes = $theme->ShowThemes();
         </form>
     </div>
 </div>
-
-       <div id="ArticlesPage" class="max-full fixed mx-auto p-6 bg-gray-900" style="left:0px;right:0px">
-            <div class="flex flex-col md:flex-row items-center justify-between mt-14">
-                <h3 class="text-3xl font-bold text-gray-50">My Articles</h3>
-                <div class="mt-6 flex flex-col md:flex-row justify-between gap-8">
-                    <div class="flex items-center space-x-4">
-                        <label for="themeFilter" class="text-gray-50">Filter by Theme:</label>
-                        <select id="theme_id" name="theme_id" required
-                            class="w-full mt-1 p-3 rounded-md border border-gray-300 focus:ring-blue-400 focus:border-blue-400">
-                            <option value="">Select Theme</option>
-                            <?php foreach ($themes as $theme): ?>
-                                <option value="<?php echo htmlspecialchars($theme['idTheme']); ?>">
-                                    <?php echo htmlspecialchars($theme['name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="flex items-center space-x-4">
+<div id="ArticlesPage" class="max-full flex fixed mx-auto p-6 bg-gray-900" style="left:0px;right:0px">
+    <div class="flex flex-col md:flex-row items-center mt-14">
+        <div class=" flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center space-x-4">
+                <label for="themeFilter" class="text-gray-50">Filter by Theme:</label>
+                <select id="theme_id" name="theme_id" required onchange="applyFilter()"
+                    class="w-full mt-1 p-3 rounded-md border border-gray-300 focus:ring-blue-400 focus:border-blue-400">
+                    <option value="">Select Theme</option>
+                    <?php foreach ($themes as $theme): ?>
+                        <option value="<?php echo htmlspecialchars($theme['idTheme']); ?>">
+                            <?php echo htmlspecialchars($theme['name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="flex items-center space-x-4">
                         <label for="tagSearch" class="text-gray-50">Search by Tags:</label>
                         <input type="text" id="tagSearch" name="tags" class="p-2 border border-gray-300 rounded-lg" placeholder="Search by tags...">
-                    </div>
-                    
-
-                <button id="addarticle" class="bg-blue-600 ml-20 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition">
-                    Add Article
-                </button>
             </div>
+            <button id="addarticle" class="bg-blue-600 ml-20 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition">
+                 Add Article
+           </button>
         </div>
-        </div>
-     
-        <div id="filteredResults" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4">
-       </div>
+    </div>
+</div>
 
+
+<div id="filteredResults" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4 ">
+    </div>
 <?php
  if (isset($_SESSION['id_user'])): ?>
     <?php
@@ -394,7 +374,9 @@ $themes = $theme->ShowThemes();
 <?php endif; ?>
 
 <?php if ($rs): ?>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4 mt-44">
+   
     <?php 
     $hasAcceptedArticles = false;
     foreach ($rs as $r): 
@@ -402,6 +384,7 @@ $themes = $theme->ShowThemes();
             $hasAcceptedArticles = true; 
     ?>
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        
         <div class="flex items-center p-4 justify-between">
             <div class="flex items-center">
                 <img src="../../assets/user.png" alt="User Profile" class="w-10 h-10 rounded-full">
@@ -411,7 +394,6 @@ $themes = $theme->ShowThemes();
                 </div>
             </div>
         </div>
-
         <div class="p-4">
             <h3 class="text-lg font-bold text-gray-800 mb-2"><?php echo htmlspecialchars($r['title']); ?></h3>
             <p class="text-sm text-gray-600 truncate"><?php echo htmlspecialchars($r['content']); ?></p>
@@ -420,7 +402,6 @@ $themes = $theme->ShowThemes();
                      alt="Article Image" class="w-full h-64 object-cover rounded-lg mt-4">
             <?php endif; ?>
         </div>
-        
             <div class="mt-4 flex items-center justify-between p-4 bg-gray-50">
                     <?php if (!empty($r['tag_name'])): ?>
                         <div class="mt-4 flex gap-2 items-center">
@@ -428,10 +409,8 @@ $themes = $theme->ShowThemes();
                             <p class="text-sm text-gray-600"><?php echo htmlspecialchars($r['tag_name']); ?></p>
                         </div>
                     <?php endif; ?>
-                    <a href="comments.php" class="text-blue-600 ">Voir Plus+</a>
+                    <a href="details.php?id_article=<?php echo htmlspecialchars($r['idArticle']); ?>" class="text-blue-600 ">Voir Plus+</a>
             </div>
-                        
-
         <div class="border-t flex justify-around p-4 bg-gray-50">
             <button class="like-btn flex items-center hover:text-blue-600">
                 <i class="fa-solid fa-thumbs-up mr-2"></i> Like
@@ -440,9 +419,13 @@ $themes = $theme->ShowThemes();
                     class="btncomment flex items-center hover:text-blue-600">
                 <i class="fa-solid fa-comment mr-2"></i> Comment
             </button>
-            <button class="flex items-center hover:text-blue-600">
-                <i class="fa-solid fa-share mr-2"></i> Share
-            </button>
+            <form action="Add_favoris.php" method="post">
+                        <input type="hidden" name="id_article" value="<?php echo $r['idArticle']; ?>">
+                        <input type="hidden" name="user_id" value="<?php echo $_SESSION['id_user']; ?>">
+                        <button type="submit" name="submitcommentfavoris"  class="flex items-center hover:text-blue-600">
+                            <i class="fa-solid fa-share mr-2"></i> Favoris
+                        </button>
+            </form>
         </div>
         <div id="commentSection<?php echo htmlspecialchars($r['idArticle']); ?>" class="hidden mt-4 p-4 bg-gray-50 rounded-lg shadow-inner">
         <form 
@@ -489,28 +472,32 @@ $themes = $theme->ShowThemes();
 <p class="text-gray-600 text-lg mt-8 text-center">No blogs available at the moment.</p>
 <?php endif; ?>
 
-<script>
-    async function applyFilter() {
-        const themeId = document.getElementById('theme_id').value;
-        const params = new URLSearchParams();
-        if (themeId) {
-            params.append('theme_id', themeId);
-        }
 
-        try {
-    const response = await fetch('filter_articles.php?' + params.toString(), {
-        method: 'GET',
-    });
-    if (response.ok) {
-        const resultHTML = await response.text();
-        document.getElementById('filteredResults').innerHTML = resultHTML;
-    } else {
-        console.error('Error fetching data:', response.status);
+<script>
+
+   async function applyFilter() {
+    const themeId = document.getElementById('theme_id').value;
+    console.log("Selected Theme ID:", themeId); 
+
+    const params = new URLSearchParams();
+    if (themeId) {
+        params.append('theme_id', themeId);
     }
-} catch (error) {
-    console.error('Error fetching data:', error);
+    try {
+        const response = await fetch('filter_articles.php?' + params.toString(), {
+            method: 'GET',
+        });
+        if (response.ok) {
+            const resultHTML = await response.text();
+            document.getElementById('filteredResults').innerHTML = resultHTML;
+        } else {
+            console.error('Error fetching data:', response.status);
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
 }
-    }
+
 </script>
 
 <script>

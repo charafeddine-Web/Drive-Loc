@@ -71,18 +71,19 @@ class Theme{
     }
 
 
-    public function ShowThemes(){
+    public function ShowThemes() {
         $pdo = DatabaseConnection::getInstance()->getConnection();
-        try{
-            $sql="SELECT * FROM themes";
-            $stmt=$pdo->prepare($sql);
+        try {
+            $sql = "SELECT * FROM themes";
+        
+            $stmt = $pdo->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             echo "Error: " . $e->getMessage();
         }
     }
-
+    
 
 
 
